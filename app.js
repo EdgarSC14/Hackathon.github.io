@@ -123,52 +123,90 @@ document.addEventListener('mousemove', (e) => {
     }, 1000);
 });
 
-// Configuración de Web3
-let web3;
+// Configuración básica
 let userAddress = null;
+
+// Configuración de la red Astar Shibuya Testnet
+const ASTAR_NETWORK = {
+    chainId: '0x51', // 81 en hexadecimal
+    chainName: 'Astar Shibuya Testnet',
+    nativeCurrency: {
+        name: 'SBY',
+        symbol: 'SBY',
+        decimals: 18
+    },
+    rpcUrls: ['https://rpc.shibuya.astar.network:8545'],
+    blockExplorerUrls: ['https://blockscout.com/shibuya']
+};
+
+// Función para verificar y cambiar a la red Astar Shibuya
+async function checkNetwork() {
+    try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        console.log('Chain ID actual:', chainId);
+        console.log('Chain ID esperado:', ASTAR_NETWORK.chainId);
+        
+        if (chainId !== ASTAR_NETWORK.chainId) {
+            try {
+                console.log('Intentando cambiar a la red Astar Shibuya...');
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: ASTAR_NETWORK.chainId }]
+                });
+                console.log('Cambio de red exitoso');
+            } catch (error) {
+                console.error('Error al cambiar de red:', error);
+                if (error.code === 4902) {
+                    console.log('Red no encontrada, intentando agregar...');
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [ASTAR_NETWORK]
+                        });
+                        console.log('Red agregada exitosamente');
+                    } catch (addError) {
+                        console.error('Error al agregar la red:', addError);
+                        throw new Error('No se pudo agregar la red Astar Shibuya. Por favor, agrégalo manualmente en MetaMask.');
+                    }
+                } else {
+                    throw new Error('No se pudo cambiar a la red Astar Shibuya. Por favor, cámbiala manualmente en MetaMask.');
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error en checkNetwork:', error);
+        throw error;
+    }
+}
 
 // Función para conectar con MetaMask
 async function connectWallet() {
-    try {
-        // Verificar si MetaMask está instalado
-        if (typeof window.ethereum === 'undefined') {
-            alert('Por favor, instala MetaMask para usar esta aplicación');
-            return;
+    if (window.ethereum) {
+        try {
+            console.log('Iniciando conexión...');
+            
+            // Primero verificar y cambiar a la red Astar
+            await checkNetwork();
+            
+            // Luego conectar la wallet
+            console.log('Solicitando cuentas...');
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userAddress = accounts[0];
+            console.log('Wallet conectada:', userAddress);
+            
+            // Actualizar la interfaz
+            document.getElementById('walletText').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
+            document.getElementById('connectWallet').classList.add('connected');
+            document.getElementById('disconnectWallet').classList.remove('hidden');
+            
+            // Actualizar el saldo
+            await updateBalance();
+        } catch (error) {
+            console.error('Error al conectar la wallet:', error);
+            alert('Error: ' + error.message || 'Error al conectar la wallet. Por favor, asegúrate de estar en la red Astar.');
         }
-
-        // Solicitar conexión a MetaMask
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAddress = accounts[0];
-        
-        // Actualizar la interfaz
-        document.getElementById('walletText').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
-        document.getElementById('connectWallet').classList.add('connected');
-        
-        // Inicializar Web3
-        web3 = new Web3(window.ethereum);
-        
-        // Escuchar cambios de cuenta
-        window.ethereum.on('accountsChanged', (accounts) => {
-            if (accounts.length === 0) {
-                // Usuario desconectado
-                userAddress = null;
-                document.getElementById('walletText').textContent = 'Conectar Wallet';
-                document.getElementById('connectWallet').classList.remove('connected');
-            } else {
-                // Cuenta cambiada
-                userAddress = accounts[0];
-                document.getElementById('walletText').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
-            }
-        });
-
-        // Escuchar cambios de red
-        window.ethereum.on('chainChanged', () => {
-            window.location.reload();
-        });
-
-    } catch (error) {
-        console.error('Error al conectar con MetaMask:', error);
-        alert('Error al conectar con MetaMask. Por favor, intenta nuevamente.');
+    } else {
+        alert('Por favor, instala MetaMask para usar esta aplicación');
     }
 }
 
@@ -182,12 +220,87 @@ window.addEventListener('load', async () => {
             const accounts = await window.ethereum.request({ method: 'eth_accounts' });
             if (accounts.length > 0) {
                 userAddress = accounts[0];
-                document.getElementById('walletText').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                const walletText = document.getElementById('walletText');
+                walletText.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                walletText.style.cursor = 'pointer';
                 document.getElementById('connectWallet').classList.add('connected');
-                web3 = new Web3(window.ethereum);
             }
         } catch (error) {
-            console.error('Error al verificar la conexión:', error);
+            console.error('Error:', error);
         }
     }
-}); 
+});
+
+async function updateBalance() {
+    if (window.ethereum && window.ethereum.selectedAddress) {
+        try {
+            const web3 = new Web3(window.ethereum);
+            const balance = await web3.eth.getBalance(window.ethereum.selectedAddress);
+            const balanceInASTR = web3.utils.fromWei(balance, 'ether');
+            document.getElementById('balance').textContent = `${parseFloat(balanceInASTR).toFixed(4)} ASTR`;
+            document.getElementById('balanceContainer').classList.remove('hidden');
+            console.log('Saldo actualizado:', balanceInASTR, 'ASTR');
+        } catch (error) {
+            console.error('Error al obtener el saldo:', error);
+            document.getElementById('balance').textContent = 'Error al obtener saldo';
+        }
+    }
+}
+
+// Actualizar el saldo cuando cambia la cuenta
+window.ethereum.on('accountsChanged', async (accounts) => {
+    if (accounts.length === 0) {
+        document.getElementById('walletText').textContent = 'Conectar Wallet';
+        document.getElementById('connectWallet').classList.remove('connected');
+        document.getElementById('balanceContainer').classList.add('hidden');
+    } else {
+        document.getElementById('walletText').textContent = `${accounts[0].substring(0, 6)}...${accounts[0].substring(accounts[0].length - 4)}`;
+        await updateBalance();
+    }
+});
+
+// Evento de clic en el botón de desconectar
+document.addEventListener('DOMContentLoaded', function() {
+    const disconnectButton = document.getElementById('disconnectWallet');
+    if (disconnectButton) {
+        disconnectButton.addEventListener('click', function() {
+            console.log('Botón de desconectar clickeado');
+            disconnectWallet();
+        });
+    }
+});
+
+// Función para desconectar la wallet
+function disconnectWallet() {
+    try {
+        console.log('Iniciando desconexión...');
+        
+        // Limpiar la dirección de la wallet
+        userAddress = null;
+        
+        // Restaurar el texto del botón de conexión
+        document.getElementById('walletText').textContent = 'Conectar Wallet';
+        
+        // Quitar la clase connected del botón
+        document.getElementById('connectWallet').classList.remove('connected');
+        
+        // Ocultar el botón de desconectar
+        document.getElementById('disconnectWallet').classList.add('hidden');
+        
+        // Ocultar el contenedor del saldo
+        document.getElementById('balanceContainer').classList.add('hidden');
+        
+        // Limpiar el saldo
+        document.getElementById('balance').textContent = '0 ASTR';
+        
+        console.log('Wallet desconectada exitosamente');
+    } catch (error) {
+        console.error('Error al desconectar la wallet:', error);
+        // Aún así, limpiar la interfaz
+        document.getElementById('walletText').textContent = 'Conectar Wallet';
+        document.getElementById('connectWallet').classList.remove('connected');
+        document.getElementById('disconnectWallet').classList.add('hidden');
+        document.getElementById('balanceContainer').classList.add('hidden');
+        document.getElementById('balance').textContent = '0 ASTR';
+    }
+} 

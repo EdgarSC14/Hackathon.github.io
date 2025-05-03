@@ -179,4 +179,83 @@ button:hover::after {
 #connectWallet.connected:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+}
+
+/* Estilos para el texto de la wallet */
+#walletText {
+    transition: all 0.3s ease;
+}
+
+#walletText[style*="cursor: pointer"] {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+#walletText[style*="cursor: pointer"]:hover {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* Estilos para el modal de membresía */
+#membershipModal .bg-gray-800 {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+#membershipModal .bg-gray-800:hover {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+    border-color: rgba(139, 92, 246, 0.4);
+}
+
+#membershipModal .text-6xl {
+    animation: float 3s ease-in-out infinite;
+}
+
+#membershipModal button {
+    transition: all 0.3s ease;
+}
+
+#membershipModal button:hover {
+    transform: translateY(-2px);
+}
+
+/* Estilos para las tarjetas de juegos beta */
+.game-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.4);
+}
+
+.game-card .bg-gradient-to-r {
+    transition: all 0.3s ease;
+}
+
+.game-card:hover .bg-gradient-to-r {
+    filter: brightness(1.1);
+}
+
+.game-card button {
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.game-card button:hover::after {
+    transform: translateX(100%);
 } 
