@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameLaunch DAO</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Fondo con efecto de partículas -->
+    <div id="particles-js" class="fixed w-full h-full"></div>
+    
+    <nav class="bg-gray-800/80 backdrop-blur-sm p-4 fixed w-full z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-gamepad text-purple-500 text-2xl"></i>
+                <h1 class="text-2xl font-bold text-purple-500">GameLaunch DAO</h1>
+            </div>
+            <div class="space-x-4">
+                <button id="connectWallet" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300">
+                    <i class="fas fa-wallet mr-2"></i><span id="walletText">Conectar Wallet</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Hero Section -->
+        <section class="text-center mb-16 pt-20">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-5xl font-bold mb-6 hero-text">Únete a la Revolución de los Videojuegos</h2>
+                <p class="text-xl text-gray-300 mb-8">Adquiere tu NFT de membresía y forma parte de una comunidad exclusiva de gamers</p>
+                <button class="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-lg text-lg font-semibold transition-all duration-300">
+                    <i class="fas fa-shopping-cart mr-2"></i>Comprar NFT
+                </button>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg feature-card">
+                <div class="text-purple-500 text-4xl mb-4">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Prueba Juegos Beta</h3>
+                <p class="text-gray-300">Accede a juegos en fase beta y gana tokens por tu feedback valioso.</p>
+            </div>
+
+            <div class="bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg feature-card">
+                <div class="text-purple-500 text-4xl mb-4">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Vota por el Mejor Juego</h3>
+                <p class="text-gray-300">Participa en la democracia de la DAO y elige los juegos más prometedores.</p>
+            </div>
+
+            <div class="bg-gray-800/80 backdrop-blur-sm p-6 rounded-lg feature-card">
+                <div class="text-purple-500 text-4xl mb-4">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Invierte en el Futuro</h3>
+                <p class="text-gray-300">Financia colectivamente el juego ganador y obtén beneficios futuros.</p>
+            </div>
+        </div>
+
+        <!-- Games Section -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-center section-title">Juegos en Votación</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg overflow-hidden game-card">
+                    <div class="h-48 bg-gradient-to-r from-purple-600 to-blue-600 relative">
+                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <i class="fas fa-gamepad text-6xl text-white"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold mb-2">Cyber Adventure</h3>
+                        <p class="text-gray-300 mb-4">Un juego de aventuras en un mundo ciberpunk lleno de misterios.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-400">Votos: 1,234</span>
+                            <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300">
+                                <i class="fas fa-vote-yea mr-2"></i>Votar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 mb-16">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold text-purple-500 mb-2">1,234</div>
+                    <div class="text-gray-400">Miembros Activos</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-purple-500 mb-2">56</div>
+                    <div class="text-gray-400">Juegos Evaluados</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-purple-500 mb-2">$500K</div>
+                    <div class="text-gray-400">Invertidos</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-purple-500 mb-2">12</div>
+                    <div class="text-gray-400">Juegos Lanzados</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800/80 backdrop-blur-sm mt-16 py-8 relative z-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-purple-500 mb-4">GameLaunch DAO</h3>
+                    <p class="text-gray-400">La plataforma líder en lanzamiento de juegos Web3</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-purple-500 mb-4">Enlaces Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Inicio</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Juegos</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Votaciones</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-purple-500 mb-4">Redes Sociales</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors"><i class="fab fa-twitter text-2xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors"><i class="fab fa-discord text-2xl"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-purple-500 transition-colors"><i class="fab fa-telegram text-2xl"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+                <p>© 2024 GameLaunch DAO. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
