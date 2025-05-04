@@ -148,9 +148,91 @@ const ASTAR_NETWORK = {
     blockExplorerUrls: ['https://blockscout.com/shibuya']
 };
 
+// Configuración de la API y el contrato
+const API_URL = "https://soneium-minato.rpc.scs.startale.com";
+const API_KEY = "ewGSqUq5V56m29jQ0O7H5mH4uZiTC2CC";
+const contractAddress = "0xC758997AD1856Ff9031Dc3A9b2Bd890f75C880d8";
+
+// Función para verificar y cambiar a la red correcta
+async function checkAndSwitchNetwork() {
+    if (!window.ethereum) {
+        throw new Error('Por favor, instala MetaMask para usar esta aplicación');
+    }
+
+    try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        console.log('Chain ID actual:', chainId);
+        console.log('Chain ID esperado:', ASTAR_NETWORK.chainId);
+        
+        if (chainId !== ASTAR_NETWORK.chainId) {
+            console.log('Cambiando a la red Astar Shibuya...');
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: ASTAR_NETWORK.chainId }],
+                });
+                console.log('Red cambiada exitosamente');
+            } catch (switchError) {
+                console.error('Error al cambiar de red:', switchError);
+                if (switchError.code === 4902) {
+                    console.log('Agregando red Astar Shibuya...');
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [ASTAR_NETWORK],
+                        });
+                        console.log('Red agregada exitosamente');
+                    } catch (addError) {
+                        console.error('Error al agregar la red:', addError);
+                        throw new Error('No se pudo agregar la red Astar Shibuya. Por favor, agrega la red manualmente en MetaMask.');
+                    }
+                } else {
+                    throw new Error('No se pudo cambiar a la red Astar Shibuya. Por favor, cambia manualmente en MetaMask.');
+                }
+            }
+        } else {
+            console.log('Ya estás en la red correcta');
+        }
+    } catch (error) {
+        console.error('Error en checkAndSwitchNetwork:', error);
+        throw error;
+    }
+}
+
+// Función para obtener el código del contrato
+async function getContractCode() {
+    try {
+        console.log('Obteniendo código del contrato...');
+        console.log('Dirección del contrato:', contractAddress);
+        
+        // Verificar que estamos en la red correcta
+        await checkAndSwitchNetwork();
+        
+        const web3 = new Web3(window.ethereum);
+        console.log('Web3 inicializado');
+        
+        // Obtener el código del contrato
+        const code = await web3.eth.getCode(contractAddress);
+        console.log('Código del contrato:', code);
+        
+        if (!code || code === '0x') {
+            console.error('No se encontró código en la dirección:', contractAddress);
+            throw new Error('No se encontró código de contrato en la dirección especificada. Por favor, verifica que estás en la red correcta (Astar Shibuya Testnet).');
+        }
+        
+        return code;
+    } catch (error) {
+        console.error('Error en getContractCode:', error);
+        if (error.message.includes('red')) {
+            throw new Error('Por favor, cambia a la red Astar Shibuya Testnet en MetaMask.');
+        }
+        throw error;
+    }
+}
+
 // Configuración del contrato de membresía
 const MEMBERSHIP_CONTRACT = {
-    address: '0xC758997AD1856Ff9031Dc3A9b2Bd890f75C880d8', // Dirección del contrato desplegado en Shibuya
+    address: contractAddress,
     abi: [
         {
             "inputs": [],
@@ -223,11 +305,287 @@ const MEMBERSHIP_CONTRACT = {
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "invest",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
             "stateMutability": "payable",
             "type": "receive"
         }
     ]
 };
+
+// Función para actualizar el precio del NFT
+async function updateNFTPrice() {
+    if (!window.ethereum || !userAddress) return;
+
+    try {
+        // Verificar si el elemento existe
+        if (!elementExists('price')) {
+            console.warn('Elemento de precio no encontrado - omitiendo actualización de precio');
+            return;
+        }
+
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+        
+        // Obtener el precio del contrato
+        const price = await contract.methods.PRICE().call();
+        const priceInSBY = web3.utils.fromWei(price, 'ether');
+        
+        document.getElementById('price').textContent = priceInSBY;
+    } catch (error) {
+        console.error('Error al obtener el precio:', error);
+        if (elementExists('price')) {
+            document.getElementById('price').textContent = 'Error';
+        }
+    }
+}
+
+// Función para verificar el contrato
+async function verifyContract() {
+    try {
+        console.log('Iniciando verificación del contrato...');
+        console.log('Dirección del contrato:', contractAddress);
+        
+        const web3 = new Web3(window.ethereum);
+        console.log('Web3 inicializado');
+        
+        // Verificar la red
+        const chainId = await web3.eth.getChainId();
+        console.log('Chain ID actual:', chainId);
+        console.log('Chain ID esperado:', parseInt(ASTAR_NETWORK.chainId, 16));
+        
+        if (chainId !== parseInt(ASTAR_NETWORK.chainId, 16)) {
+            throw new Error(`Red incorrecta. Por favor, cambia a ${ASTAR_NETWORK.chainName}`);
+        }
+        
+        // Verificar que el contrato existe
+        const code = await web3.eth.getCode(contractAddress);
+        console.log('Código del contrato:', code);
+        
+        if (!code || code === '0x') {
+            throw new Error('No se encontró código de contrato en la dirección especificada');
+        }
+        
+        // Crear instancia del contrato
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+        console.log('Instancia del contrato creada');
+        
+        // Verificar que podemos llamar a una función simple
+        try {
+            const price = await contract.methods.PRICE().call();
+            console.log('Precio de suscripción:', web3.utils.fromWei(price, 'ether'), 'SBY');
+            return true;
+        } catch (priceError) {
+            console.error('Error al llamar a PRICE():', priceError);
+            throw new Error('No se pudo interactuar con el contrato. Verifica el ABI.');
+        }
+    } catch (error) {
+        console.error('Error detallado en verifyContract:', error);
+        if (error.message.includes('red incorrecta')) {
+            alert(error.message);
+        } else {
+            alert('Error al verificar el contrato: ' + error.message);
+        }
+        return false;
+    }
+}
+
+// Función para verificar la suscripción
+async function checkSubscription() {
+    if (!window.ethereum || !userAddress) return;
+
+    try {
+        console.log('Iniciando verificación de suscripción...');
+        await checkAndSwitchNetwork();
+        
+        const web3 = new Web3(window.ethereum);
+        console.log('Web3 inicializado para verificación de suscripción');
+        
+        // Verificar el contrato primero
+        console.log('Verificando contrato...');
+        const isContractValid = await verifyContract();
+        if (!isContractValid) {
+            throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
+        }
+        
+        console.log('Creando instancia del contrato...');
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+
+        // Intentar obtener el estado de suscripción
+        console.log('Verificando estado de suscripción...');
+        isSubscribed = await contract.methods.isSubscribed(userAddress).call();
+        console.log('Estado de suscripción:', isSubscribed);
+        
+        // Actualizar la UI
+        const notSubscribedInterface = document.getElementById('notSubscribedInterface');
+        const subscribedInterface = document.getElementById('subscribedInterface');
+        const subscribeButton = document.getElementById('subscribeButton');
+        const unsubscribeButton = document.getElementById('unsubscribeButton');
+        const dropdownSubscribeButton = document.getElementById('dropdownSubscribeButton');
+        const dropdownUnsubscribeButton = document.getElementById('dropdownUnsubscribeButton');
+        
+        if (isSubscribed) {
+            if (notSubscribedInterface) notSubscribedInterface.classList.add('hidden');
+            if (subscribedInterface) subscribedInterface.classList.remove('hidden');
+            if (subscribeButton) subscribeButton.classList.add('hidden');
+            if (unsubscribeButton) unsubscribeButton.classList.remove('hidden');
+            if (dropdownSubscribeButton) dropdownSubscribeButton.classList.add('hidden');
+            if (dropdownUnsubscribeButton) dropdownUnsubscribeButton.classList.remove('hidden');
+        } else {
+            if (notSubscribedInterface) notSubscribedInterface.classList.remove('hidden');
+            if (subscribedInterface) subscribedInterface.classList.add('hidden');
+            if (subscribeButton) subscribeButton.classList.remove('hidden');
+            if (unsubscribeButton) unsubscribeButton.classList.add('hidden');
+            if (dropdownSubscribeButton) dropdownSubscribeButton.classList.remove('hidden');
+            if (dropdownUnsubscribeButton) dropdownUnsubscribeButton.classList.add('hidden');
+        }
+        
+        // Actualizar el estado en el menú desplegable
+        if (elementExists('dropdownSubscriptionStatus')) {
+            const statusElement = document.getElementById('dropdownSubscriptionStatus');
+            statusElement.textContent = isSubscribed ? 'Activa' : 'Inactiva';
+            statusElement.classList.remove('text-green-500', 'text-red-500');
+            statusElement.classList.add(isSubscribed ? 'text-green-500' : 'text-red-500');
+        }
+        
+        return isSubscribed;
+    } catch (error) {
+        console.error('Error al verificar suscripción:', error);
+        alert('Error al verificar suscripción: ' + error.message);
+        return false;
+    }
+}
+
+// Función para suscribirse
+async function subscribe() {
+    if (!window.ethereum || !userAddress) {
+        alert('Por favor, conecta tu wallet primero');
+        return;
+    }
+
+    try {
+        console.log('Iniciando proceso de suscripción...');
+        await checkAndSwitchNetwork();
+        
+        const web3 = new Web3(window.ethereum);
+        console.log('Web3 inicializado para suscripción');
+        
+        // Verificar el contrato primero
+        console.log('Verificando contrato...');
+        const isContractValid = await verifyContract();
+        if (!isContractValid) {
+            throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
+        }
+        
+        console.log('Creando instancia del contrato...');
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+
+        // Verificar si ya está suscrito
+        console.log('Verificando estado de suscripción...');
+        const isAlreadySubscribed = await contract.methods.isSubscribed(userAddress).call();
+        if (isAlreadySubscribed) {
+            alert('Ya estás suscrito.');
+            return;
+        }
+        
+        // Obtener el precio de suscripción
+        console.log('Obteniendo precio de suscripción...');
+        const price = await contract.methods.PRICE().call();
+        const priceInSBY = web3.utils.fromWei(price, 'ether');
+        console.log('Precio de suscripción:', priceInSBY, 'SBY');
+        
+        // Verificar el saldo
+        console.log('Verificando saldo...');
+        const balance = await web3.eth.getBalance(userAddress);
+        const balanceInSBY = web3.utils.fromWei(balance, 'ether');
+        console.log('Saldo actual:', balanceInSBY, 'SBY');
+        
+        if (BigInt(balance) < BigInt(price)) {
+            alert(`Saldo insuficiente. Necesitas ${priceInSBY} SBY pero tienes ${balanceInSBY} SBY`);
+            return;
+        }
+        
+        if (confirm(`¿Deseas suscribirte por ${priceInSBY} SBY?`)) {
+            console.log('Iniciando transacción de suscripción...');
+            const tx = await contract.methods.subscribe().send({
+                from: userAddress,
+                value: price,
+                gas: 300000
+            });
+            
+            console.log('Transacción completada:', tx);
+            alert('¡Suscripción exitosa!');
+            
+            // Actualizar la interfaz
+            const subscribeButton = document.getElementById('subscribeButton');
+            const unsubscribeButton = document.getElementById('unsubscribeButton');
+            if (subscribeButton) subscribeButton.classList.add('hidden');
+            if (unsubscribeButton) unsubscribeButton.classList.remove('hidden');
+            
+            await updateBalance();
+            await checkSubscription();
+        }
+    } catch (error) {
+        console.error('Error detallado al suscribirse:', error);
+        alert('Error al suscribirse: ' + error.message);
+    }
+}
+
+// Función para desuscribirse
+async function unsubscribe() {
+    if (!window.ethereum || !userAddress) {
+        alert('Por favor, conecta tu wallet primero');
+        return;
+    }
+
+    try {
+        await checkAndSwitchNetwork();
+        
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+        
+        // Verificar el contrato primero
+        const isContractValid = await verifyContract();
+        if (!isContractValid) {
+            throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
+        }
+
+        // Verificar si está suscrito
+        const isSubscribed = await contract.methods.isSubscribed(userAddress).call();
+        if (!isSubscribed) {
+            alert('No estás suscrito.');
+            return;
+        }
+        
+        if (confirm('¿Estás seguro que deseas cancelar tu suscripción? Recibirás un reembolso de 1 SBY.')) {
+            console.log('Iniciando transacción de desuscripción...');
+            const tx = await contract.methods.unsubscribe().send({
+                from: userAddress,
+                gas: 300000
+            });
+            
+            console.log('Transacción completada:', tx);
+            alert('Suscripción cancelada. Has recibido tu reembolso de 1 SBY.');
+            
+            // Actualizar la interfaz
+            const subscribeButton = document.getElementById('subscribeButton');
+            const unsubscribeButton = document.getElementById('unsubscribeButton');
+            if (subscribeButton) subscribeButton.classList.remove('hidden');
+            if (unsubscribeButton) unsubscribeButton.classList.add('hidden');
+            
+            await updateBalance();
+            await checkSubscription();
+        }
+    } catch (error) {
+        console.error('Error al desuscribirse:', error);
+        alert('Error al desuscribirse: ' + error.message);
+    }
+}
 
 // Función para conectar con MetaMask
 async function connectWallet() {
@@ -236,6 +594,8 @@ async function connectWallet() {
             alert('Por favor, instala MetaMask para usar esta aplicación');
             return;
         }
+
+        await checkAndSwitchNetwork();
 
         console.log('Solicitando conexión...');
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -246,6 +606,18 @@ async function connectWallet() {
 
         userAddress = accounts[0];
         console.log('Wallet conectada:', userAddress);
+
+        // Verificar el contrato
+        try {
+            const code = await getContractCode();
+            if (!code || code === '0x') {
+                throw new Error('El contrato no está desplegado en la dirección especificada');
+            }
+        } catch (error) {
+            console.error('Error al verificar el contrato:', error);
+            alert('Error al verificar el contrato: ' + error.message);
+            return;
+        }
 
         // Verificar que los elementos del DOM existan
         const walletText = document.getElementById('walletText');
@@ -292,11 +664,24 @@ window.addEventListener('load', async () => {
             const accounts = await window.ethereum.request({ method: 'eth_accounts' });
             if (accounts.length > 0) {
                 userAddress = accounts[0];
-                const walletText = document.getElementById('walletText');
-                walletText.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
-                document.getElementById('connectWallet').classList.add('connected');
-                document.getElementById('disconnectWallet').classList.remove('hidden');
-                document.getElementById('balanceContainer').classList.remove('hidden');
+                
+                // Verificar que los elementos existan antes de actualizarlos
+                if (elementExists('walletText')) {
+                    document.getElementById('walletText').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
+                }
+                
+                if (elementExists('connectWallet')) {
+                    document.getElementById('connectWallet').classList.add('connected');
+                }
+                
+                if (elementExists('disconnectWallet')) {
+                    document.getElementById('disconnectWallet').classList.remove('hidden');
+                }
+                
+                if (elementExists('balanceContainer')) {
+                    document.getElementById('balanceContainer').classList.remove('hidden');
+                }
+                
                 await updateBalance();
                 await updateNFTPrice();
                 await checkSubscription();
@@ -307,6 +692,16 @@ window.addEventListener('load', async () => {
     }
 });
 
+// Función para verificar si un elemento existe
+function elementExists(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.warn(`Elemento con ID '${elementId}' no encontrado`);
+        return false;
+    }
+    return true;
+}
+
 // Función para actualizar el saldo
 async function updateBalance() {
     if (!window.ethereum || !userAddress) return;
@@ -315,18 +710,17 @@ async function updateBalance() {
         const balance = await web3.eth.getBalance(userAddress);
         const balanceInSBY = web3.utils.fromWei(balance, 'ether');
         
-        const balanceElement = document.getElementById('balance');
-        const balanceContainer = document.getElementById('balanceContainer');
+        if (elementExists('balance')) {
+            document.getElementById('balance').textContent = `${parseFloat(balanceInSBY).toFixed(4)} SBY`;
+        }
         
-        if (balanceElement && balanceContainer) {
-            balanceElement.textContent = `${parseFloat(balanceInSBY).toFixed(4)} SBY`;
-            balanceContainer.classList.remove('hidden');
+        if (elementExists('balanceContainer')) {
+            document.getElementById('balanceContainer').classList.remove('hidden');
         }
     } catch (error) {
         console.error('Error al obtener el saldo:', error);
-        const balanceElement = document.getElementById('balance');
-        if (balanceElement) {
-            balanceElement.textContent = 'Error al obtener saldo';
+        if (elementExists('balance')) {
+            document.getElementById('balance').textContent = 'Error al obtener saldo';
         }
     }
 }
@@ -367,221 +761,46 @@ function disconnectWallet() {
         // Limpiar la dirección de la wallet
         userAddress = null;
         
-        // Restaurar el texto del botón de conexión
-        document.getElementById('walletText').textContent = 'Conectar Wallet';
+        // Verificar que los elementos existan antes de actualizarlos
+        if (elementExists('walletText')) {
+            document.getElementById('walletText').textContent = 'Conectar Wallet';
+        }
         
-        // Quitar la clase connected del botón
-        document.getElementById('connectWallet').classList.remove('connected');
+        if (elementExists('connectWallet')) {
+            document.getElementById('connectWallet').classList.remove('connected');
+        }
         
-        // Ocultar el botón de desconectar
-        document.getElementById('disconnectWallet').classList.add('hidden');
+        if (elementExists('disconnectWallet')) {
+            document.getElementById('disconnectWallet').classList.add('hidden');
+        }
         
-        // Ocultar el contenedor del saldo
-        document.getElementById('balanceContainer').classList.add('hidden');
+        if (elementExists('balanceContainer')) {
+            document.getElementById('balanceContainer').classList.add('hidden');
+        }
         
-        // Limpiar el saldo
-        document.getElementById('balance').textContent = '0 SBY';
+        if (elementExists('balance')) {
+            document.getElementById('balance').textContent = '0 SBY';
+        }
         
         console.log('Wallet desconectada exitosamente');
     } catch (error) {
         console.error('Error al desconectar la wallet:', error);
-        // Aún así, limpiar la interfaz
-        document.getElementById('walletText').textContent = 'Conectar Wallet';
-        document.getElementById('connectWallet').classList.remove('connected');
-        document.getElementById('disconnectWallet').classList.add('hidden');
-        document.getElementById('balanceContainer').classList.add('hidden');
-        document.getElementById('balance').textContent = '0 SBY';
-    }
-}
-
-// Función para mostrar el precio del NFT
-async function updateNFTPrice() {
-    if (!window.ethereum || !userAddress) return;
-
-    try {
-        const nftContract = new web3.eth.Contract(NFT_CONTRACT.abi, NFT_CONTRACT.address);
-        
-        // Usar el precio fijo de 1 SBY
-        const priceInSBY = '1.0000';
-        document.getElementById('price').textContent = priceInSBY;
-    } catch (error) {
-        console.error('Error al obtener el precio del NFT:', error);
-        document.getElementById('price').textContent = '1.0000'; // Mostrar 1 SBY como precio predeterminado
-    }
-}
-
-// Función para verificar el estado de la suscripción
-async function checkSubscription() {
-    if (!window.ethereum || !userAddress) return;
-
-    try {
-        const membershipContract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, MEMBERSHIP_CONTRACT.address);
-        isSubscribed = await membershipContract.methods.isSubscribed(userAddress).call();
-        
-        // Obtener referencias a las interfaces
-        const notSubscribedInterface = document.getElementById('notSubscribedInterface');
-        const subscribedInterface = document.getElementById('subscribedInterface');
-        
-        // Obtener todos los botones de cursos y votaciones
-        const courseButtons = document.querySelectorAll('.course-button');
-        const voteButtons = document.querySelectorAll('.vote-button');
-        
-        if (isSubscribed) {
-            // Mostrar interfaz de suscrito y ocultar la de no suscrito
-            notSubscribedInterface.classList.add('hidden');
-            subscribedInterface.classList.remove('hidden');
-            
-            // Actualizar el estado en el menú desplegable
-            document.getElementById('dropdownSubscriptionStatus').textContent = 'Activa';
-            document.getElementById('dropdownSubscriptionStatus').classList.add('text-green-500');
-            document.getElementById('dropdownSubscriptionStatus').classList.remove('text-red-500');
-            
-            // Ocultar botones de suscripción en el menú desplegable
-            document.getElementById('dropdownSubscribeButton').classList.add('hidden');
-            document.getElementById('dropdownUnsubscribeButton').classList.remove('hidden');
-            
-            // Habilitar funcionalidad de cursos y votaciones
-            courseButtons.forEach(button => {
-                button.onclick = function() {
-                    // Aquí iría la lógica para iniciar el curso
-                    alert('Iniciando curso...');
-                };
-            });
-            
-            voteButtons.forEach(button => {
-                button.onclick = function() {
-                    // Aquí iría la lógica para votar
-                    alert('Votando...');
-                };
-            });
-        } else {
-            // Mostrar interfaz de no suscrito y ocultar la de suscrito
-            notSubscribedInterface.classList.remove('hidden');
-            subscribedInterface.classList.add('hidden');
-            
-            // Actualizar el estado en el menú desplegable
-            document.getElementById('dropdownSubscriptionStatus').textContent = 'Inactiva';
-            document.getElementById('dropdownSubscriptionStatus').classList.add('text-red-500');
-            document.getElementById('dropdownSubscriptionStatus').classList.remove('text-green-500');
-            
-            // Mostrar botón de suscripción en el menú desplegable
-            document.getElementById('dropdownSubscribeButton').classList.remove('hidden');
-            document.getElementById('dropdownUnsubscribeButton').classList.add('hidden');
-            
-            // Mostrar modal de membresía al intentar acceder a cursos o votaciones
-            courseButtons.forEach(button => {
-                button.onclick = showMembershipModal;
-            });
-            
-            voteButtons.forEach(button => {
-                button.onclick = showMembershipModal;
-            });
+        // Aún así, intentar limpiar la interfaz
+        if (elementExists('walletText')) {
+            document.getElementById('walletText').textContent = 'Conectar Wallet';
         }
-        
-        // Actualizar el saldo en el menú desplegable
-        const balance = await web3.eth.getBalance(userAddress);
-        const balanceInSBY = web3.utils.fromWei(balance, 'ether');
-        document.getElementById('dropdownBalance').textContent = `${parseFloat(balanceInSBY).toFixed(4)} SBY`;
-        
-    } catch (error) {
-        console.error('Error al verificar suscripción:', error);
-    }
-}
-
-// Función para suscribirse
-async function subscribe() {
-    if (!window.ethereum || !userAddress) {
-        alert('Por favor, conecta tu wallet primero');
-        return;
-    }
-
-    try {
-        const membershipContract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, MEMBERSHIP_CONTRACT.address);
-        
-        // Verificar si ya está suscrito
-        const isAlreadySubscribed = await membershipContract.methods.isSubscribed(userAddress).call();
-        if (isAlreadySubscribed) {
-            alert('Ya estás suscrito.');
-            return;
+        if (elementExists('connectWallet')) {
+            document.getElementById('connectWallet').classList.remove('connected');
         }
-        
-        // Obtener el precio de suscripción
-        const price = await membershipContract.methods.PRICE().call();
-        const priceInSBY = web3.utils.fromWei(price, 'ether');
-        console.log('Precio de suscripción:', priceInSBY, 'SBY');
-        
-        // Verificar el saldo de SBY
-        const balance = await web3.eth.getBalance(userAddress);
-        const balanceInSBY = web3.utils.fromWei(balance, 'ether');
-        console.log('Tu saldo de SBY:', balanceInSBY, 'SBY');
-        
-        if (BigInt(balance) < BigInt(price)) {
-            alert(`Saldo insuficiente. Necesitas ${priceInSBY} SBY pero tienes ${balanceInSBY} SBY`);
-            return;
+        if (elementExists('disconnectWallet')) {
+            document.getElementById('disconnectWallet').classList.add('hidden');
         }
-        
-        if (confirm(`¿Deseas suscribirte por ${priceInSBY} SBY?\n\nBeneficios:\n- Acceso a juegos en fase beta\n- Derecho a voto en la DAO\n- Oportunidades de inversión exclusivas\n- Recompensas por participación`)) {
-            console.log('Iniciando suscripción...');
-            try {
-                const tx = await membershipContract.methods.subscribe().send({
-                    from: userAddress,
-                    value: price,
-                    gas: 300000
-                });
-                
-                alert('¡Suscripción exitosa! Ahora eres miembro de GameLaunch DAO.');
-                console.log('Transacción de suscripción:', tx);
-                
-                // Actualizar el saldo y estado de suscripción
-                await updateBalance();
-                await checkSubscription();
-            } catch (subscribeError) {
-                console.error('Error en la suscripción:', subscribeError);
-                if (subscribeError.message.includes('revert')) {
-                    alert('Error: La transacción fue revertida. Verifica que:\n1. Tienes suficientes SBY\n2. No estás ya suscrito\n\nDetalles del error: ' + subscribeError.message);
-                } else {
-                    alert('Error al suscribirse: ' + subscribeError.message);
-                }
-            }
+        if (elementExists('balanceContainer')) {
+            document.getElementById('balanceContainer').classList.add('hidden');
         }
-    } catch (error) {
-        console.error('Error general:', error);
-        alert('Error: ' + error.message);
-    }
-}
-
-// Función para desuscribirse
-async function unsubscribe() {
-    if (!window.ethereum || !userAddress) {
-        alert('Por favor, conecta tu wallet primero');
-        return;
-    }
-
-    try {
-        const membershipContract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, MEMBERSHIP_CONTRACT.address);
-        
-        // Verificar si está suscrito
-        const isSubscribed = await membershipContract.methods.isSubscribed(userAddress).call();
-        if (!isSubscribed) {
-            alert('No estás suscrito.');
-            return;
+        if (elementExists('balance')) {
+            document.getElementById('balance').textContent = '0 SBY';
         }
-        
-        if (confirm('¿Estás seguro que deseas cancelar tu suscripción?\nSe te reembolsará 1 SBY.')) {
-            const tx = await membershipContract.methods.unsubscribe().send({
-                from: userAddress
-            });
-            
-            alert('Suscripción cancelada. Se te ha reembolsado 1 SBY.');
-            console.log('Transacción:', tx);
-            
-            // Actualizar el saldo y estado de suscripción
-            await updateBalance();
-            await checkSubscription();
-        }
-    } catch (error) {
-        console.error('Error al desuscribirse:', error);
-        alert('Error al desuscribirse: ' + error.message);
     }
 }
 
@@ -659,17 +878,61 @@ function updateWalletDropdown() {
     }
 }
 
-// Actualizar el menú cuando cambia el estado de la suscripción
-async function checkSubscription() {
-    if (!window.ethereum || !userAddress) return;
+// Función para invertir
+async function invest(amount) {
+    if (!window.ethereum || !userAddress) {
+        throw new Error('Por favor, conecta tu wallet primero');
+    }
 
     try {
-        const membershipContract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, MEMBERSHIP_CONTRACT.address);
-        isSubscribed = await membershipContract.methods.isSubscribed(userAddress).call();
+        console.log('Iniciando proceso de inversión...');
+        await checkAndSwitchNetwork();
         
-        // Actualizar la UI
-        updateWalletDropdown();
+        const web3 = new Web3(window.ethereum);
+        console.log('Web3 inicializado para inversión');
+        
+        // Verificar el contrato primero
+        console.log('Verificando contrato...');
+        const isContractValid = await verifyContract();
+        if (!isContractValid) {
+            throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
+        }
+        
+        // Verificar la suscripción
+        const isSubscribed = await checkSubscription();
+        if (!isSubscribed) {
+            throw new Error('Necesitas estar suscrito para invertir.');
+        }
+        
+        // Convertir el monto a wei
+        const amountInWei = web3.utils.toWei(amount.toString(), 'ether');
+        console.log('Monto a invertir:', amount, 'SBY');
+        console.log('Monto en wei:', amountInWei);
+        
+        // Verificar el saldo
+        const balance = await web3.eth.getBalance(userAddress);
+        const balanceInSBY = web3.utils.fromWei(balance, 'ether');
+        console.log('Saldo actual:', balanceInSBY, 'SBY');
+        
+        if (BigInt(balance) < BigInt(amountInWei)) {
+            throw new Error(`Saldo insuficiente. Necesitas ${amount} SBY pero tienes ${balanceInSBY} SBY`);
+        }
+        
+        if (confirm(`¿Deseas invertir ${amount} SBY?`)) {
+            console.log('Iniciando transacción de inversión...');
+            const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+            const tx = await contract.methods.invest().send({
+                from: userAddress,
+                value: amountInWei,
+                gas: 300000
+            });
+            
+            console.log('Transacción completada:', tx);
+            alert('¡Inversión exitosa!');
+            await updateBalance();
+        }
     } catch (error) {
-        console.error('Error al verificar suscripción:', error);
+        console.error('Error al invertir:', error);
+        throw error;
     }
 } 
