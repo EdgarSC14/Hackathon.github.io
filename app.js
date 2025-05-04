@@ -128,6 +128,9 @@ let userAddress = null;
 let web3;
 let isSubscribed = false;
 
+// Variable global para controlar el estado de la transacción
+let isUnsubscribing = false;
+
 // Inicializar Web3
 if (typeof window.ethereum !== 'undefined') {
     web3 = new Web3(window.ethereum);
@@ -305,13 +308,6 @@ const MEMBERSHIP_CONTRACT = {
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "invest",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-        },
-        {
             "stateMutability": "payable",
             "type": "receive"
         }
@@ -428,6 +424,7 @@ async function checkSubscription() {
         const unsubscribeButton = document.getElementById('unsubscribeButton');
         const dropdownSubscribeButton = document.getElementById('dropdownSubscribeButton');
         const dropdownUnsubscribeButton = document.getElementById('dropdownUnsubscribeButton');
+        const nftImage = document.getElementById('nftImage');
         
         if (isSubscribed) {
             if (notSubscribedInterface) notSubscribedInterface.classList.add('hidden');
@@ -436,6 +433,7 @@ async function checkSubscription() {
             if (unsubscribeButton) unsubscribeButton.classList.remove('hidden');
             if (dropdownSubscribeButton) dropdownSubscribeButton.classList.add('hidden');
             if (dropdownUnsubscribeButton) dropdownUnsubscribeButton.classList.remove('hidden');
+            if (nftImage) nftImage.classList.remove('hidden');
         } else {
             if (notSubscribedInterface) notSubscribedInterface.classList.remove('hidden');
             if (subscribedInterface) subscribedInterface.classList.add('hidden');
@@ -443,6 +441,7 @@ async function checkSubscription() {
             if (unsubscribeButton) unsubscribeButton.classList.add('hidden');
             if (dropdownSubscribeButton) dropdownSubscribeButton.classList.remove('hidden');
             if (dropdownUnsubscribeButton) dropdownUnsubscribeButton.classList.add('hidden');
+            if (nftImage) nftImage.classList.add('hidden');
         }
         
         // Actualizar el estado en el menú desplegable
@@ -524,8 +523,11 @@ async function subscribe() {
             // Actualizar la interfaz
             const subscribeButton = document.getElementById('subscribeButton');
             const unsubscribeButton = document.getElementById('unsubscribeButton');
+            const nftImage = document.getElementById('nftImage');
+            
             if (subscribeButton) subscribeButton.classList.add('hidden');
             if (unsubscribeButton) unsubscribeButton.classList.remove('hidden');
+            if (nftImage) nftImage.classList.remove('hidden');
             
             await updateBalance();
             await checkSubscription();
@@ -538,54 +540,163 @@ async function subscribe() {
 
 // Función para desuscribirse
 async function unsubscribe() {
+    // Prevenir múltiples llamadas simultáneas
+    if (isUnsubscribing) {
+        console.log('Ya hay una transacción de desuscripción en proceso');
+        return;
+    }
+
+    console.log('Función unsubscribe llamada');
+    
     if (!window.ethereum || !userAddress) {
+        console.log('No hay wallet conectada');
         alert('Por favor, conecta tu wallet primero');
         return;
     }
 
     try {
+        isUnsubscribing = true;
+        console.log('Iniciando proceso de desuscripción...');
+        console.log('Dirección del usuario:', userAddress);
+        
         await checkAndSwitchNetwork();
         
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+        console.log('Web3 inicializado para desuscripción');
         
         // Verificar el contrato primero
+        console.log('Verificando contrato...');
         const isContractValid = await verifyContract();
         if (!isContractValid) {
             throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
         }
+        
+        console.log('Creando instancia del contrato...');
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
+        console.log('Instancia del contrato creada');
 
         // Verificar si está suscrito
+        console.log('Verificando estado de suscripción...');
         const isSubscribed = await contract.methods.isSubscribed(userAddress).call();
+        console.log('Estado de suscripción:', isSubscribed);
+        
         if (!isSubscribed) {
             alert('No estás suscrito.');
             return;
         }
+
+        // Verificar el balance del contrato
+        const contractBalance = await web3.eth.getBalance(contractAddress);
+        console.log('Balance del contrato:', web3.utils.fromWei(contractBalance, 'ether'), 'SBY');
+        
+        if (BigInt(contractBalance) < web3.utils.toWei('1', 'ether')) {
+            throw new Error('El contrato no tiene suficiente balance para procesar el reembolso');
+        }
         
         if (confirm('¿Estás seguro que deseas cancelar tu suscripción? Recibirás un reembolso de 1 SBY.')) {
-            console.log('Iniciando transacción de desuscripción...');
-            const tx = await contract.methods.unsubscribe().send({
-                from: userAddress,
-                gas: 300000
-            });
+            console.log('Usuario confirmó la desuscripción');
             
-            console.log('Transacción completada:', tx);
-            alert('Suscripción cancelada. Has recibido tu reembolso de 1 SBY.');
-            
-            // Actualizar la interfaz
-            const subscribeButton = document.getElementById('subscribeButton');
-            const unsubscribeButton = document.getElementById('unsubscribeButton');
-            if (subscribeButton) subscribeButton.classList.remove('hidden');
-            if (unsubscribeButton) unsubscribeButton.classList.add('hidden');
-            
-            await updateBalance();
-            await checkSubscription();
+            try {
+                console.log('Preparando transacción...');
+                
+                // Obtener el gas estimado
+                const gasEstimate = await contract.methods.unsubscribe().estimateGas({ from: userAddress });
+                console.log('Gas estimado:', gasEstimate);
+                
+                // Obtener el gas price actual
+                const gasPrice = await web3.eth.getGasPrice();
+                console.log('Gas price:', gasPrice);
+
+                // Enviar la transacción directamente usando el contrato
+                console.log('Enviando transacción...');
+                const tx = await contract.methods.unsubscribe().send({
+                    from: userAddress,
+                    gas: Math.floor(gasEstimate * 1.2), // Aumentar el gas en un 20%
+                    gasPrice: gasPrice
+                });
+                
+                console.log('Transacción enviada:', tx);
+                
+                if (tx.status) {
+                    console.log('Transacción exitosa');
+                    alert('Suscripción cancelada. Has recibido tu reembolso de 1 SBY.');
+                    
+                    // Actualizar la interfaz
+                    const subscribeButton = document.getElementById('subscribeButton');
+                    const unsubscribeButton = document.getElementById('unsubscribeButton');
+                    const nftImage = document.getElementById('nftImage');
+                    
+                    if (subscribeButton) subscribeButton.classList.remove('hidden');
+                    if (unsubscribeButton) unsubscribeButton.classList.add('hidden');
+                    if (nftImage) nftImage.classList.add('hidden');
+                    
+                    await updateBalance();
+                    await checkSubscription();
+                } else {
+                    throw new Error('La transacción falló');
+                }
+            } catch (txError) {
+                console.error('Error detallado en la transacción:', txError);
+                
+                // Manejar específicamente las reversiones del EVM
+                if (txError.message.includes('reverted by the EVM')) {
+                    console.error('Transacción revertida por el EVM:', txError);
+                    // No mostrar alerta si la transacción ya fue exitosa
+                    if (!txError.receipt || !txError.receipt.status) {
+                        alert('La transacción fue revertida. Esto puede deberse a que:\n1. Ya no estás suscrito\n2. El contrato no tiene suficiente balance\n3. Hay un problema con el contrato\n\nPor favor, verifica tu estado de suscripción e intenta nuevamente.');
+                    }
+                } else if (txError.message.includes('user denied')) {
+                    alert('Transacción cancelada por el usuario');
+                } else if (txError.message.includes('insufficient funds')) {
+                    alert('Saldo insuficiente para completar la transacción');
+                } else {
+                    console.error('Error completo:', txError);
+                    alert('Error al desuscribirse: ' + txError.message);
+                }
+            }
+        } else {
+            console.log('Usuario canceló la desuscripción');
         }
     } catch (error) {
         console.error('Error al desuscribirse:', error);
         alert('Error al desuscribirse: ' + error.message);
+    } finally {
+        isUnsubscribing = false;
     }
 }
+
+// Agregar event listeners para los botones de desuscripción
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Agregando event listeners para botones de desuscripción');
+    
+    // Botón principal de desuscripción
+    const unsubscribeButton = document.getElementById('unsubscribeButton');
+    if (unsubscribeButton) {
+        console.log('Botón principal de desuscripción encontrado');
+        unsubscribeButton.addEventListener('click', function(e) {
+            console.log('Botón de desuscripción clickeado');
+            e.preventDefault();
+            e.stopPropagation(); // Prevenir propagación del evento
+            unsubscribe();
+        });
+    } else {
+        console.log('Botón principal de desuscripción no encontrado');
+    }
+    
+    // Botón de desuscripción en el dropdown
+    const dropdownUnsubscribeButton = document.getElementById('dropdownUnsubscribeButton');
+    if (dropdownUnsubscribeButton) {
+        console.log('Botón de desuscripción del dropdown encontrado');
+        dropdownUnsubscribeButton.addEventListener('click', function(e) {
+            console.log('Botón de desuscripción del dropdown clickeado');
+            e.preventDefault();
+            e.stopPropagation(); // Prevenir propagación del evento
+            unsubscribe();
+        });
+    } else {
+        console.log('Botón de desuscripción del dropdown no encontrado');
+    }
+});
 
 // Función para conectar con MetaMask
 async function connectWallet() {
@@ -904,7 +1015,7 @@ async function invest(amount) {
             throw new Error('Necesitas estar suscrito para invertir.');
         }
         
-        // Convertir el monto a wei
+        // Convertir el monto a wei (1 SBY = 10^18 wei)
         const amountInWei = web3.utils.toWei(amount.toString(), 'ether');
         console.log('Monto a invertir:', amount, 'SBY');
         console.log('Monto en wei:', amountInWei);
@@ -918,21 +1029,113 @@ async function invest(amount) {
             throw new Error(`Saldo insuficiente. Necesitas ${amount} SBY pero tienes ${balanceInSBY} SBY`);
         }
         
-        if (confirm(`¿Deseas invertir ${amount} SBY?`)) {
-            console.log('Iniciando transacción de inversión...');
-            const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
-            const tx = await contract.methods.invest().send({
-                from: userAddress,
-                value: amountInWei,
-                gas: 300000
-            });
-            
-            console.log('Transacción completada:', tx);
+        // Crear la transacción
+        const transactionParameters = {
+            from: userAddress,
+            to: contractAddress,
+            value: web3.utils.toHex(amountInWei),
+            gas: web3.utils.toHex(300000)
+        };
+
+        // Enviar la transacción
+        console.log('Enviando transacción...');
+        const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [transactionParameters],
+        });
+        
+        console.log('Transacción enviada:', txHash);
+        
+        // Esperar a que la transacción sea minada
+        console.log('Esperando confirmación de la transacción...');
+        
+        // Función para esperar la confirmación
+        const waitForConfirmation = async (txHash, maxAttempts = 30) => {
+            for (let i = 0; i < maxAttempts; i++) {
+                try {
+                    const receipt = await web3.eth.getTransactionReceipt(txHash);
+                    if (receipt) {
+                        return receipt;
+                    }
+                } catch (error) {
+                    console.log(`Intento ${i + 1}: Error al obtener recibo, reintentando...`, error);
+                }
+                // Esperar 2 segundos antes del siguiente intento
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            return null;
+        };
+
+        const receipt = await waitForConfirmation(txHash);
+        
+        if (!receipt) {
+            throw new Error('La transacción no fue confirmada después de varios intentos. Por favor, verifica el estado de la transacción en el explorador de bloques.');
+        }
+
+        console.log('Recibo de transacción:', receipt);
+        
+        if (receipt.status) {
             alert('¡Inversión exitosa!');
             await updateBalance();
+        } else {
+            throw new Error('La transacción falló. Por favor, verifica que tienes suficiente saldo y que la red no está congestionada.');
         }
     } catch (error) {
         console.error('Error al invertir:', error);
-        throw error;
+        if (error.message.includes('user denied')) {
+            throw new Error('Transacción cancelada por el usuario');
+        } else if (error.message.includes('insufficient funds')) {
+            throw new Error('Saldo insuficiente para completar la transacción');
+        } else {
+            throw error;
+        }
     }
-} 
+}
+
+// Estilos para el logo PixelGrant
+const style = document.createElement('style');
+style.textContent = `
+    .pixel-grant-logo {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(45deg, #8B5CF6, #EC4899);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 2px 2px 4px rgba(139, 92, 246, 0.2);
+        letter-spacing: 0.05em;
+        position: relative;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .pixel-grant-logo:hover {
+        transform: scale(1.05);
+        text-shadow: 3px 3px 6px rgba(139, 92, 246, 0.3);
+    }
+
+    .pixel-grant-logo::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, transparent);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .pixel-grant-logo:hover::after {
+        transform: scaleX(1);
+    }
+`;
+document.head.appendChild(style);
+
+// Actualizar el elemento del logo
+document.addEventListener('DOMContentLoaded', function() {
+    const logoElement = document.querySelector('.text-xl.font-bold');
+    if (logoElement) {
+        logoElement.classList.add('pixel-grant-logo');
+    }
+}); 
