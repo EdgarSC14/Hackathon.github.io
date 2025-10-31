@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelGrant</title>
+    <title>Impulso Web3</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -16,12 +16,25 @@
     <nav class="bg-gray-800 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <span class="text-xl font-bold">PixelGrant</span>
+                <span class="text-xl font-bold">Impulso Web3</span>
+                <div class="hidden md:flex items-center space-x-2 ml-6">
+                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="home">Inicio</button>
+                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="finanzas">Finanzas Inclusivas</button>
+                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="creadores">Creadores</button>
+                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="scroll">DeFi en Scroll</button>
+                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="arbitrum">Innovación en Arbitrum</button>
+                </div>
             </div>
             <div class="flex items-center space-x-4">
+                <div class="hidden md:block">
+                    <select id="networkSelector" class="bg-gray-700 text-sm px-3 py-2 rounded">
+                        <option value="scrollSepolia">Scroll Sepolia</option>
+                        <option value="arbitrumSepolia">Arbitrum Sepolia</option>
+                    </select>
+                </div>
                 <div id="balanceContainer" class="hidden">
                     <span class="text-sm">Saldo: </span>
-                    <span id="balance" class="font-bold">0 SBY</span>
+                    <span id="balance" class="font-bold">0</span>
                 </div>
                 <div class="relative">
                     <button id="connectWallet" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
@@ -62,248 +75,173 @@
     </nav>
 
     <main class="container mx-auto px-4 py-8 relative z-10">
-        <!-- Interfaz para usuarios NO suscritos -->
-        <div id="notSubscribedInterface" class="hidden">
-            <!-- Hero Section -->
-            <section class="text-center mb-16 pt-20">
-                <div class="max-w-4xl mx-auto">
-                    <h2 class="text-5xl font-bold mb-6 hero-text">Únete a la Revolución de los Videojuegos</h2>
-                    <p class="text-xl text-gray-300 mb-8">Adquiere tu membresía y forma parte de una comunidad exclusiva de gamers</p>
-                    <div class="flex justify-center">
-                        <button id="subscribeButton" onclick="subscribe()" class="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-lg text-lg font-semibold transition-all duration-300">
-                            <i class="fas fa-crown mr-2"></i>Suscribirse por 1 SBY
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- NFT Info Section -->
-            <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 mb-16">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4 text-purple-500">Beneficios de la Membresía</h3>
-                        <ul class="space-y-4">
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                <span>Acceso a juegos en fase beta</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                <span>Derecho a voto en la DAO</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                <span>Oportunidades de inversión exclusivas</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                <span>Recompensas por participación</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="flex items-center justify-center">
-                        <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-1 rounded-lg">
-                            <div class="bg-gray-900 p-4 rounded-lg">
-                                <img src="assets/images/nft.jpeg" alt="NFT Preview" class="rounded-lg w-64 h-64 object-cover">
-                                <h4 class="text-xl font-bold mt-4">PixelGrant Membership</h4>
-                                <p class="text-gray-400">Tu pase a la comunidad exclusiva de gamers</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sección de Membresía -->
-            <div class="mb-12">
-                <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-8 text-white">
-                    <h2 class="text-3xl font-bold mb-4">Membresía PixelGrant</h2>
-                    <p class="text-lg mb-6">Únete a nuestra comunidad y accede a contenido exclusivo</p>
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <button id="subscribeButton" onclick="subscribe()" class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-100 transition">
-                            Suscribirse por 1 SBY
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <!-- Navegación móvil -->
+        <div class="md:hidden grid grid-cols-2 gap-2 mb-4">
+            <button class="bg-gray-800 px-3 py-2 rounded" data-nav="home">Inicio</button>
+            <button class="bg-gray-800 px-3 py-2 rounded" data-nav="finanzas">Finanzas Inclusivas</button>
+            <button class="bg-gray-800 px-3 py-2 rounded" data-nav="creadores">Creadores</button>
+            <button class="bg-gray-800 px-3 py-2 rounded" data-nav="scroll">DeFi en Scroll</button>
+            <button class="bg-gray-800 px-3 py-2 rounded col-span-2" data-nav="arbitrum">Innovación en Arbitrum</button>
         </div>
-
-        <!-- Interfaz para usuarios suscritos -->
-        <div id="subscribedInterface">
-            <!-- Hero Section -->
-            <section class="text-center mb-16 pt-20">
-                <div class="max-w-4xl mx-auto">
-                    <h2 class="text-5xl font-bold mb-6 hero-text">Bienvenido a PixelGrant</h2>
-                    <p class="text-xl text-gray-300 mb-8">Tu membresía está activa. Disfruta de todos los beneficios exclusivos.</p>
-                    <div class="flex justify-center">
-                        <button id="unsubscribeButton" onclick="unsubscribe()" class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-lg text-lg font-semibold transition-all duration-300">
-                            <i class="fas fa-times-circle mr-2"></i>Cancelar Suscripción
-                        </button>
-                    </div>
-                    <div class="mt-8">
-                        <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-1 rounded-lg inline-block">
-                            <div class="bg-gray-900 p-4 rounded-lg">
-                                <img id="nftImage" src="assets/images/nft.jpeg" alt="NFT Membership" class="rounded-lg w-64 h-64 object-cover">
-                                <h4 class="text-xl font-bold mt-4">PixelGrant Membership</h4>
-                                <p class="text-gray-400">Tu pase a la comunidad exclusiva de gamers</p>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Bloque de bienvenida y stats eliminado -->
+        
+        <!-- Secciones por categoría -->
+        <section id="section-home" class="mt-8">
+            <h2 class="text-3xl font-bold mb-4">Explora las categorías</h2>
+            <p class="text-gray-300 mb-6">Selecciona una categoría para ver funcionalidades y comenzar.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold">Finanzas y Sistemas de Pago para la Inclusión</h3>
+                    <p class="text-gray-400 mt-2">Ahorro, pagos por QR, remesas y microcréditos.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="finanzas">Ver más</button>
                 </div>
-            </section>
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold">Creatividad y Economía de Creadores</h3>
+                    <p class="text-gray-400 mt-2">Suscripciones, regalías y colaboración equitativa.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="creadores">Ver más</button>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold">DeFi y Pagos en Scroll</h3>
+                    <p class="text-gray-400 mt-2">Pagos rápidos y productos DeFi en zkEVM.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="scroll">Ver más</button>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg">
+                    <h3 class="text-xl font-bold">Innovación en Arbitrum</h3>
+                    <p class="text-gray-400 mt-2">Experiencias avanzadas, DeFi, identidad e integraciones.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="arbitrum">Ver más</button>
+                </div>
+            </div>
 
-            <!-- Features Section -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <!-- Features solo en Inicio -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
                 <div class="bg-gray-800 p-6 rounded-lg">
-                    <div class="text-purple-500 text-4xl mb-4">🎮</div>
-                    <h3 class="text-xl font-bold mb-2">Prueba Juegos Beta</h3>
-                    <p class="text-gray-300 mb-4">Accede a juegos en fase beta y gana tokens por tu feedback valioso.</p>
-                    <button onclick="showGamesModal()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300">
-                        <i class="fas fa-gamepad mr-2"></i>Ver Juegos
+                    <div class="text-purple-500 text-4xl mb-4">💳</div>
+                    <h3 class="text-xl font-bold mb-2">Pagos Inclusivos</h3>
+                    <p class="text-gray-300 mb-4">Cobra con QR, envía remesas y paga con stablecoins.</p>
+                    <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300" data-nav="finanzas">
+                        Ir a Finanzas
                     </button>
                 </div>
 
                 <div class="bg-gray-800 p-6 rounded-lg">
-                    <div class="text-purple-500 text-4xl mb-4">🗳️</div>
-                    <h3 class="text-xl font-bold mb-2">Vota por el Mejor Juego</h3>
-                    <p class="text-gray-300">Participa en la democracia de la DAO y elige los juegos más prometedores.</p>
-                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300 vote-button">
-                        <i class="fas fa-vote-yea mr-2"></i>Votar
+                    <div class="text-purple-500 text-4xl mb-4">🎨</div>
+                    <h3 class="text-xl font-bold mb-2">Creadores</h3>
+                    <p class="text-gray-300">Suscripciones, regalías justas y experiencias con tu audiencia.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300" data-nav="creadores">
+                        Ir a Creadores
                     </button>
                 </div>
 
                 <div class="bg-gray-800 p-6 rounded-lg">
-                    <div class="text-purple-500 text-4xl mb-4">💰</div>
-                    <h3 class="text-xl font-bold mb-2">Invierte en el Futuro</h3>
-                    <p class="text-gray-300">Financia colectivamente el juego ganador y obtén beneficios futuros.</p>
-                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300 invest-button">
-                        <i class="fas fa-coins mr-2"></i>Invertir
+                    <div class="text-purple-500 text-4xl mb-4">⚙️</div>
+                    <h3 class="text-xl font-bold mb-2">DeFi en L2</h3>
+                    <p class="text-gray-300">Pagos y productos DeFi en Scroll y Arbitrum.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300" data-nav="scroll">
+                        Ir a DeFi
                     </button>
                 </div>
             </div>
 
-            <!-- Stats Section -->
-            <section class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 mb-16">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <!-- Stats solo en Inicio -->
+            <section class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 mt-10">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
                     <div>
                         <div class="text-4xl font-bold text-purple-500 mb-2">1,234</div>
                         <div class="text-gray-400">Miembros Activos</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-purple-500 mb-2">56</div>
-                        <div class="text-gray-400">Juegos Evaluados</div>
                     </div>
                     <div>
                         <div class="text-4xl font-bold text-purple-500 mb-2">$500K</div>
                         <div class="text-gray-400">Invertidos</div>
                     </div>
                     <div>
-                        <div class="text-4xl font-bold text-purple-500 mb-2">12</div>
-                        <div class="text-gray-400">Juegos Lanzados</div>
+                        <div class="text-4xl font-bold text-purple-500 mb-2">24</div>
+                        <div class="text-gray-400">Comunidades Aliadas</div>
                     </div>
                 </div>
             </section>
+        </section>
 
-            <!-- Votaciones Section -->
-            <section class="mb-16">
-                <h2 class="text-3xl font-bold mb-8 text-center section-title">Votaciones Activas</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Votación 1 -->
-                    <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">Próximo Juego a Financiar</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Cyber Adventure</span>
-                                <div class="flex items-center">
-                                    <span class="text-purple-500 mr-2">45%</span>
-                                    <button class="vote-button bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
-                                        Votar
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Dragon's Legacy</span>
-                                <div class="flex items-center">
-                                    <span class="text-purple-500 mr-2">35%</span>
-                                    <button class="vote-button bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
-                                        Votar
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Space Odyssey</span>
-                                <div class="flex items-center">
-                                    <span class="text-purple-500 mr-2">20%</span>
-                                    <button class="vote-button bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
-                                        Votar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-700">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-400">Tiempo restante: 2 días</span>
-                                <span class="text-gray-400">Total votos: 1,234</span>
-                            </div>
-                        </div>
-                    </div>
+        <section id="section-finanzas" class="mt-12 hidden">
+            <h2 class="text-3xl font-bold mb-4">Finanzas y Sistemas de Pago para la Inclusión</h2>
+            <p class="text-gray-300 mb-6">Ampliar el acceso a herramientas financieras justas y transparentes.</p>
+            <ul class="list-disc list-inside text-gray-400 mb-6">
+                <li>Sistemas de pago con QR/NFC/WhatsApp</li>
+                <li>Préstamos y microcréditos comunitarios</li>
+                <li>Stablecoins para ahorro y remesas</li>
+            </ul>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-pago-qr">Pagar por QR</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-generar-qr">Generar QR para Cobro</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-remesa">Enviar remesa</button>
+            </div>
 
-                    <!-- Votación 2 -->
-                    <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">Nueva Característica de Plataforma</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Sistema de Logros</span>
-                                <div class="flex items-center">
-                                    <span class="text-purple-500 mr-2">60%</span>
-                                    <button class="vote-button bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
-                                        Votar
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Marketplace de NFTs</span>
-                                <div class="flex items-center">
-                                    <span class="text-purple-500 mr-2">30%</span>
-                                    <button class="vote-button bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
-                                        Votar
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Sistema de Torneos</span>
-                                <div class="flex items-center">
-                                    <span class="text-purple-500 mr-2">10%</span>
-                                    <button class="vote-button bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm">
-                                        Votar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-gray-700">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-400">Tiempo restante: 5 días</span>
-                                <span class="text-gray-400">Total votos: 856</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Remesas Form -->
+            <div class="mt-8 bg-gray-800/80 rounded-lg p-6">
+                <h3 class="text-2xl font-bold mb-4">Enviar Remesa</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input id="remesaAddress" class="bg-gray-700 text-white px-4 py-2 rounded" placeholder="Dirección destino 0x...">
+                    <input id="remesaAmount" type="number" step="0.0001" min="0" class="bg-gray-700 text-white px-4 py-2 rounded" placeholder="Monto">
+                    <button id="remesaSendBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">Enviar</button>
                 </div>
-            </section>
-        </div>
+                <p class="text-sm text-gray-400 mt-2">Se enviará el token nativo de la red seleccionada.</p>
+            </div>
+        </section>
+
+        <section id="section-creadores" class="mt-12 hidden">
+            <h2 class="text-3xl font-bold mb-4">Creatividad y Economía de Creadores</h2>
+            <p class="text-gray-300 mb-6">Herramientas que devuelven el control e ingresos a creadores.</p>
+            <ul class="list-disc list-inside text-gray-400 mb-6">
+                <li>Distribución justa de regalías</li>
+                <li>Boletaje/experiencias transparentes</li>
+                <li>Suscripciones y membresías directas</li>
+            </ul>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-suscripciones">Crear suscripción</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-regalias">Dividir regalías</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-experiencias">Configurar experiencia</button>
+            </div>
+        </section>
+
+        <section id="section-scroll" class="mt-12 hidden">
+            <h2 class="text-3xl font-bold mb-4">DeFi y Sistemas de Pago en Scroll</h2>
+            <p class="text-gray-300 mb-6">Aprovecha la velocidad, seguridad y costos bajos de Scroll zkEVM.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-pagar-scroll">Pagar en Scroll</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-defi-scroll">Usar DeFi (vault)</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-liquidez-scroll">Proveer liquidez</button>
+            </div>
+        </section>
+
+        <section id="section-arbitrum" class="mt-12 hidden">
+            <h2 class="text-3xl font-bold mb-4">Innovación en Arbitrum</h2>
+            <p class="text-gray-300 mb-6">Construye apps Web3 eficientes y accesibles en L2.</p>
+            <ul class="list-disc list-inside text-gray-400 mb-6">
+                <li>Soluciones DeFi y herramientas de identidad</li>
+                <li>Integraciones cross-chain</li>
+                <li>Experiencias de usuario avanzadas</li>
+            </ul>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-pagar-arbitrum">Pagar en Arbitrum</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-defi-arbitrum">Probar DeFi</button>
+                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-crosschain">Cross-chain demo</button>
+            </div>
+        </section>
+
     </main>
 
     <footer class="bg-gray-800/80 backdrop-blur-sm mt-16 py-8 relative z-10">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold text-purple-500 mb-4">PixelGrant</h3>
-                    <p class="text-gray-400">La plataforma líder en lanzamiento de juegos Web3</p>
+                    <h3 class="text-xl font-bold text-purple-500 mb-4">Impulso Web3</h3>
+                    <p class="text-gray-400">Pagos inclusivos, economía de creadores y DeFi en L2</p>
                 </div>
                 <div>
                     <h3 class="text-xl font-bold text-purple-500 mb-4">Enlaces Rápidos</h3>
                     <ul class="space-y-2">
                         <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Inicio</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Juegos</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Votaciones</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Finanzas Inclusivas</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-purple-500 transition-colors">Creadores</a></li>
                     </ul>
                 </div>
                 <div>
@@ -316,7 +254,7 @@
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
-                <p>© 2024 PixelGrant. Todos los derechos reservados.</p>
+                <p>© 2024 Impulso Web3. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
@@ -361,133 +299,6 @@
         </div>
     </div>
 
-    <!-- Modal de Juegos -->
-    <div id="gamesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-gray-800 rounded-lg p-8 max-w-4xl w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Juegos en Beta</h3>
-                <button onclick="closeGamesModal()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Juego 1 -->
-                <div class="bg-gray-700/50 rounded-lg overflow-hidden">
-                    <div class="h-48 bg-gradient-to-r from-purple-600 to-blue-600 relative">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <i class="fas fa-gamepad text-6xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold mb-2">Cyber Adventure</h4>
-                        <p class="text-gray-300 mb-4">Un juego de aventuras en un mundo ciberpunk lleno de misterios.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-purple-400">Beta Abierta</span>
-                            <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300">
-                                <i class="fas fa-play mr-2"></i>Probar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Juego 2 -->
-                <div class="bg-gray-700/50 rounded-lg overflow-hidden">
-                    <div class="h-48 bg-gradient-to-r from-blue-600 to-green-600 relative">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <i class="fas fa-dragon text-6xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold mb-2">Dragon's Legacy</h4>
-                        <p class="text-gray-300 mb-4">Un RPG de fantasía con dragones y magia ancestral.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-purple-400">Beta Abierta</span>
-                            <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300">
-                                <i class="fas fa-play mr-2"></i>Probar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Juego 3 -->
-                <div class="bg-gray-700/50 rounded-lg overflow-hidden">
-                    <div class="h-48 bg-gradient-to-r from-red-600 to-yellow-600 relative">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <i class="fas fa-space-shuttle text-6xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold mb-2">Space Odyssey</h4>
-                        <p class="text-gray-300 mb-4">Explora el universo en esta aventura espacial épica.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-purple-400">Beta Abierta</span>
-                            <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300">
-                                <i class="fas fa-play mr-2"></i>Probar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Juego 4 -->
-                <div class="bg-gray-700/50 rounded-lg overflow-hidden">
-                    <div class="h-48 bg-gradient-to-r from-green-600 to-blue-600 relative">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <i class="fas fa-ghost text-6xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold mb-2">Phantom Quest</h4>
-                        <p class="text-gray-300 mb-4">Un juego de terror y misterio con elementos de puzzle.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-purple-400">Beta Cerrada</span>
-                            <button class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all duration-300 cursor-not-allowed" disabled>
-                                <i class="fas fa-lock mr-2"></i>Próximamente
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Juego 5 -->
-                <div class="bg-gray-700/50 rounded-lg overflow-hidden">
-                    <div class="h-48 bg-gradient-to-r from-yellow-600 to-red-600 relative">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <i class="fas fa-chess text-6xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold mb-2">Strategy Masters</h4>
-                        <p class="text-gray-300 mb-4">Un juego de estrategia por turnos con NFTs coleccionables.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-purple-400">Beta Cerrada</span>
-                            <button class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all duration-300 cursor-not-allowed" disabled>
-                                <i class="fas fa-lock mr-2"></i>Próximamente
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Juego 6 -->
-                <div class="bg-gray-700/50 rounded-lg overflow-hidden">
-                    <div class="h-48 bg-gradient-to-r from-pink-600 to-purple-600 relative">
-                        <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <i class="fas fa-music text-6xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold mb-2">Rhythm Revolution</h4>
-                        <p class="text-gray-300 mb-4">Un juego de ritmo con NFTs musicales interactivos.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-purple-400">Beta Cerrada</span>
-                            <button class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all duration-300 cursor-not-allowed" disabled>
-                                <i class="fas fa-lock mr-2"></i>Próximamente
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal de Inversión -->
     <div id="investmentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
@@ -496,10 +307,10 @@
                     <i class="fas fa-coins"></i>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">Invertir en el Proyecto</h3>
-                <p class="text-gray-300 mb-6">Ingresa el monto que deseas invertir en SBY</p>
+                <p class="text-gray-300 mb-6">Ingresa el monto que deseas invertir</p>
                 <div class="mb-6">
-                    <input type="number" id="investmentAmount" class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg mb-2" placeholder="Monto en SBY" min="0.1" step="0.1">
-                    <p class="text-sm text-gray-400">Monto mínimo: 0.1 SBY</p>
+                    <input type="number" id="investmentAmount" class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg mb-2" placeholder="Monto" min="0.001" step="0.001">
+                    <p class="text-sm text-gray-400">Monto mínimo: 0.001</p>
                 </div>
                 <div class="flex space-x-4 justify-center">
                     <button onclick="closeInvestmentModal()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg transition-all duration-300">
@@ -513,8 +324,54 @@
         </div>
     </div>
 
+    <!-- Modal Pagar por QR -->
+    <div id="payQrModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-lg mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Pagar por QR</h3>
+                <button class="text-gray-400 hover:text-white" onclick="closePayQrModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div class="text-sm text-gray-400">Escanea un código QR con la cámara para cargar dirección y monto.</div>
+                <video id="qrVideo" class="w-full rounded bg-black"></video>
+                <canvas id="qrCanvas" class="hidden"></canvas>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <input id="qrPayAddress" class="bg-gray-700 text-white px-3 py-2 rounded" placeholder="Dirección destino 0x...">
+                    <input id="qrPayAmount" type="number" step="0.0001" min="0" class="bg-gray-700 text-white px-3 py-2 rounded" placeholder="Monto">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded" onclick="stopQrScan()">Detener cámara</button>
+                    <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" onclick="confirmQrPayment()">Pagar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Generar QR de Cobro -->
+    <div id="genQrModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Generar QR para Cobro</h3>
+                <button class="text-gray-400 hover:text-white" onclick="closeGenQrModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-3">
+                    <input id="genQrTo" class="bg-gray-700 text-white px-3 py-2 rounded" placeholder="Dirección a cobrar (tu 0x...)" />
+                    <input id="genQrAmount" type="number" step="0.0001" min="0" class="bg-gray-700 text-white px-3 py-2 rounded" placeholder="Monto" />
+                </div>
+                <div id="genQrContainer" class="flex items-center justify-center bg-gray-900 rounded p-4"></div>
+                <div class="flex justify-end">
+                    <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" onclick="generatePaymentQr()">Generar QR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- QR libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
     <script src="app.js"></script>
     <script>
         // Función para mostrar el modal de membresía
@@ -599,23 +456,7 @@
             });
         });
 
-        // Función para mostrar el modal de juegos
-        function showGamesModal() {
-            const modal = document.getElementById('gamesModal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('.bg-gray-800').classList.remove('scale-95', 'opacity-0');
-            }, 10);
-        }
-
-        // Función para cerrar el modal de juegos
-        function closeGamesModal() {
-            const modal = document.getElementById('gamesModal');
-            modal.querySelector('.bg-gray-800').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
+        // Las funciones y modal de juegos se han eliminado
     </script>
 </body>
 </html> 
