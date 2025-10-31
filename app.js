@@ -1373,11 +1373,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('chatToggle');
     const chatWindow = document.getElementById('chatWindow');
     const chatClose = document.getElementById('chatClose');
+    const chatTitle = document.getElementById('chatTitle');
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
     const chatMessages = document.getElementById('chatMessages');
 
     if (!toggleBtn || !chatWindow || !chatForm || !chatInput || !chatMessages) return;
+
+    // Establecer título del chat con la marca actual visible en la página
+    const detectedBrand = (document.querySelector('nav .text-xl.font-bold')?.textContent || '').trim() || 'Impulso Web3';
+    if (chatTitle) {
+        chatTitle.textContent = `Asistente ${detectedBrand}`;
+    }
 
     function appendMessage(role, text) {
         const wrapper = document.createElement('div');
@@ -1407,12 +1414,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+	function getTextSafe(el) {
+		return (el && el.textContent ? el.textContent : '').replace(/\s+/g, ' ').trim();
+	}
+
+	function getPageContext() {
+		const ctx = [];
+		// Branding / hero
+		ctx.push(`Marca: ${getTextSafe(document.querySelector('nav .text-xl.font-bold')) || 'PixelGrant'}`);
+		ctx.push(`Hero: ${getTextSafe(document.querySelector('.hero-text'))}`);
+		// Beneficios
+		const benefits = Array.from(document.querySelectorAll('#notSubscribedInterface ul li span')).map(el => getTextSafe(el)).filter(Boolean);
+		if (benefits.length) ctx.push(`Beneficios: ${benefits.join(' | ')}`);
+		// Secciones principales (títulos y CTA visibles)
+		const sections = Array.from(document.querySelectorAll('h3, h2')).map(el => getTextSafe(el)).filter(Boolean).slice(0, 12);
+		if (sections.length) ctx.push(`Secciones: ${sections.join(' | ')}`);
+		// Stats
+		const stats = Array.from(document.querySelectorAll('[class*="text-4xl"]')).map(el => getTextSafe(el)).filter(Boolean);
+		if (stats.length) ctx.push(`Estadísticas visibles: ${stats.join(', ')}`);
+		// Estado de suscripción (si hay UI)
+		const subState = getTextSafe(document.getElementById('dropdownSubscriptionStatus')) || (typeof isSubscribed !== 'undefined' ? (isSubscribed ? 'Activa' : 'Inactiva') : 'Desconocido');
+		ctx.push(`Suscripción: ${subState}`);
+		// Limitar tamaño para no saturar el prompt
+		let text = ctx.join('\n');
+		if (text.length > 1200) text = text.slice(0, 1200) + '…';
+		return text;
+	}
+
     async function askGemini(prompt) {
-        const body = {
+		const pageContext = getPageContext();
+		const body = {
             contents: [
                 {
                     role: 'user',
-                    parts: [{ text: `Responde en español de forma breve y útil. Si la pregunta es sobre PixelGrant (DAO de gaming), usa un tono acorde y referencia el contexto del sitio; si no, responde normalmente sin limitarte al tema.\n\nPregunta del usuario: ${prompt}` }]
+					parts: [{ text: `Responde en español de forma breve y útil. Usa el siguiente contexto de la página si es relevante para la pregunta.\n\nContexto de la página:\n${pageContext}\n\nPregunta del usuario: ${prompt}` }]
                 }
             ]
         };
@@ -1448,7 +1483,7 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleBtn.addEventListener('click', () => {
         chatWindow.classList.toggle('hidden');
         if (!chatWindow.classList.contains('hidden') && chatMessages.children.length === 0) {
-            appendMessage('bot', '¡Hola! Soy tu asistente. ¿En qué te ayudo sobre PixelGrant?');
+            appendMessage('bot', `¡Hola! Soy tu asistente de ${detectedBrand}. ¿En qué te ayudo?`);
         }
         chatInput.focus();
     });
