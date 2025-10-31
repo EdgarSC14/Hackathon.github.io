@@ -1139,3 +1139,120 @@ document.addEventListener('DOMContentLoaded', function() {
         logoElement.classList.add('pixel-grant-logo');
     }
 }); 
+
+// ==========================
+// Asistente IA (Gemini)
+// ==========================
+(function initAIChat() {
+    const GEMINI_API_KEY = 'AIzaSyCpCuWEYXyT1Cd98bns5U3eryd7Z0fMy0g';
+    const MODEL_CANDIDATES = [
+        'gemini-2.5-flash',
+        'gemini-1.5-flash',
+        'gemini-pro'
+    ];
+    const buildEndpoint = (model) => `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+
+    const toggleBtn = document.getElementById('chatToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatClose = document.getElementById('chatClose');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+
+    if (!toggleBtn || !chatWindow || !chatForm || !chatInput || !chatMessages) return;
+
+    function appendMessage(role, text) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `msg ${role}`;
+        const avatar = document.createElement('div');
+        avatar.className = `avatar ${role}`;
+        avatar.innerHTML = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot text-purple-300"></i>';
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = text;
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        chatMessages.appendChild(wrapper);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function setLoading(isLoading) {
+        if (isLoading) {
+            appendMessage('bot', 'Pensando...');
+        } else {
+            // Remove last loading if exists
+            const items = chatMessages.querySelectorAll('.msg.bot .bubble');
+            const last = items[items.length - 1];
+            if (last && last.textContent === 'Pensando...') {
+                last.parentElement.remove();
+            }
+        }
+    }
+
+    async function askGemini(prompt) {
+        const body = {
+            contents: [
+                {
+                    role: 'user',
+                    parts: [{ text: `Responde en español de forma breve y útil. Si la pregunta es sobre PixelGrant (DAO de gaming), usa un tono acorde y referencia el contexto del sitio; si no, responde normalmente sin limitarte al tema.\n\nPregunta del usuario: ${prompt}` }]
+                }
+            ]
+        };
+
+        // Intentar en cadena con los modelos candidatos
+        for (let i = 0; i < MODEL_CANDIDATES.length; i++) {
+            const model = MODEL_CANDIDATES[i];
+            let res;
+            try {
+                res = await fetch(buildEndpoint(model), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+            } catch (netErr) {
+                // probar siguiente modelo
+                continue;
+            }
+
+            if (res.ok) {
+                const data = await res.json();
+                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude generar respuesta.';
+                return i === 0 ? text : `[Usando modelo alternativo: ${model}] ${text}`;
+            }
+
+            // Si 404, pasar al siguiente; para otros códigos, intentar siguiente también
+            continue;
+        }
+
+        throw new Error('No fue posible usar ningún modelo disponible en este momento.');
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        chatWindow.classList.toggle('hidden');
+        if (!chatWindow.classList.contains('hidden') && chatMessages.children.length === 0) {
+            appendMessage('bot', '¡Hola! Soy tu asistente. ¿En qué te ayudo sobre PixelGrant?');
+        }
+        chatInput.focus();
+    });
+
+    if (chatClose) {
+        chatClose.addEventListener('click', () => chatWindow.classList.add('hidden'));
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const value = chatInput.value.trim();
+        if (!value) return;
+        appendMessage('user', value);
+        chatInput.value = '';
+        setLoading(true);
+        try {
+            const answer = await askGemini(value);
+            setLoading(false);
+            appendMessage('bot', answer);
+        } catch (err) {
+            setLoading(false);
+            appendMessage('bot', `Ocurrió un error al consultar la IA: ${err.message}`);
+        }
+    });
+})();

@@ -321,6 +321,25 @@
         </div>
     </footer>
 
+    <!-- Asistente IA: botón y ventana de chat -->
+    <button id="chatToggle" class="fixed bottom-6 right-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg z-50">
+        <i class="fas fa-comment-dots text-2xl"></i>
+    </button>
+    <div id="chatWindow" class="hidden fixed bottom-24 right-6 w-80 max-w-[90vw] bg-gray-800 rounded-xl shadow-2xl z-50 overflow-hidden border border-purple-600/30">
+        <div class="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-purple-600/30">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-robot text-purple-400"></i>
+                <span class="font-semibold">Asistente PixelGrant</span>
+            </div>
+            <button id="chatClose" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chatMessages" class="p-3 space-y-3 max-h-96 overflow-y-auto bg-gray-800"></div>
+        <form id="chatForm" class="flex items-center gap-2 p-3 bg-gray-900 border-t border-purple-600/30">
+            <input id="chatInput" type="text" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Escribe tu pregunta..." autocomplete="off" />
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+
     <!-- Modal de Membresía -->
     <div id="membershipModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">

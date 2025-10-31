@@ -259,3 +259,51 @@ button:hover::after {
 .game-card button:hover::after {
     transform: translateX(100%);
 } 
+
+/* Asistente IA */
+#chatWindow {
+    backdrop-filter: blur(6px);
+}
+
+#chatMessages .msg {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+#chatMessages .msg .bubble {
+    max-width: 80%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.3rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#chatMessages .msg.user .bubble {
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+#chatMessages .msg.bot .bubble {
+    background: rgba(31, 41, 55, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+#chatMessages .avatar {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+}
+
+#chatMessages .avatar.user {
+    background: rgba(139, 92, 246, 0.25);
+}
+
+#chatMessages .avatar.bot {
+    background: rgba(55, 65, 81, 0.9);
+}
