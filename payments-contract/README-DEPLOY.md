@@ -13,7 +13,8 @@ Este contrato de pagos está escrito en Rust y compilado para Arbitrum Stylus.
 
 ### Verificar el contrato
 ```bash
-cargo stylus check
+# Especifica el endpoint para evitar errores de conexión local
+cargo stylus check --endpoint https://sepolia-rollup.arbitrum.io/rpc
 ```
 
 ### Exportar ABI

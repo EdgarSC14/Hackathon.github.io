@@ -32,8 +32,21 @@ echo "🚀 Desplegando contrato de pagos en Arbitrum Sepolia..."
 echo "📍 Endpoint: https://sepolia-rollup.arbitrum.io/rpc"
 echo ""
 
-# Desplegar
+# Primero verificar el contrato
+echo "📋 Verificando contrato..."
 source "$HOME/.cargo/env"
+cargo stylus check --endpoint https://sepolia-rollup.arbitrum.io/rpc
+
+if [ $? -ne 0 ]; then
+    echo "❌ Error: El contrato no pasó las verificaciones"
+    exit 1
+fi
+
+echo ""
+echo "✅ Verificación exitosa. Desplegando..."
+echo ""
+
+# Desplegar
 cargo stylus deploy \
   --private-key "$PRIVATE_KEY" \
   --endpoint https://sepolia-rollup.arbitrum.io/rpc

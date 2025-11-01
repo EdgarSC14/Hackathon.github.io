@@ -1,0 +1,42 @@
+🚀 CÓMO DESPLEGAR EL CONTRATO STYLUS
+====================================
+
+OPCIÓN 1: Ejecutar directamente (Recomendado)
+---------------------------------------------
+
+1. Ve al directorio del contrato:
+   cd payments-contract
+
+2. Configura tu clave privada (sin el 0x inicial):
+   export PRIVATE_KEY='tu_clave_privada_aqui'
+
+3. Ejecuta el script de despliegue:
+   ./deploy-now.sh
+
+OPCIÓN 2: Todo en un solo comando
+----------------------------------
+
+cd payments-contract && \
+PRIVATE_KEY='tu_clave_privada' && \
+./deploy-now.sh
+
+IMPORTANTE:
+-----------
+- Usa SOLO cuentas de TESTNET (Arbitrum Sepolia)
+- NUNCA compartas tu clave privada
+- Asegúrate de tener ETH en Arbitrum Sepolia para gas
+- El despliegue cuesta aproximadamente 0.001-0.01 ETH
+
+OBTENER ETH DE TESTNET:
+-----------------------
+https://faucet.quicknode.com/arbitrum/sepolia
+
+DESPUÉS DEL DESPLIEGUE:
+-----------------------
+1. Copia la dirección del contrato que aparece
+2. Actualiza contracts-arbitrum.js:
+   arbitrumSepolia: {
+       payments: '0xDIRECCION_AQUI',
+       ...
+   }
+3. Prueba usando test-stylus.html
