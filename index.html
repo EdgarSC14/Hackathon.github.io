@@ -26,15 +26,44 @@
                     <button class="morpho-rounded-button morpho-nav-button" data-nav="finanzas">Finanzas Inclusivas</button>
                     <button class="morpho-rounded-button morpho-nav-button" data-nav="creadores">Creadores</button>
                     <button class="morpho-rounded-button morpho-nav-button" data-nav="arbitrum">Innovación en Arbitrum</button>
+                    <button class="morpho-rounded-button morpho-nav-button" data-nav="scroll">DeFi & Scroll</button>
                     <button class="morpho-rounded-button morpho-nav-button" data-nav="deploy">Desplegar Stylus</button>
                 </div>
             </div>
             <div class="nav-actions">
-                <div class="hidden md:block">
-                    <select id="networkSelector" class="morpho-select">
+                <div class="hidden md:block morpho-select-wrapper">
+                    <select id="networkSelector" class="morpho-select" style="display: none;">
                         <option value="arbitrumSepolia">Arbitrum Sepolia</option>
                         <option value="arbitrumOne">Arbitrum One</option>
+                        <option value="scrollSepolia">Scroll Sepolia</option>
+                        <option value="scroll">Scroll Mainnet</option>
                     </select>
+                    <div class="morpho-custom-select">
+                        <div class="morpho-custom-select-trigger">
+                            <span class="morpho-select-value">Arbitrum Sepolia</span>
+                            <svg class="morpho-select-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="morpho-custom-select-options">
+                            <div class="morpho-custom-option" data-value="arbitrumSepolia">
+                                <span class="option-text">Arbitrum Sepolia</span>
+                                <span class="option-badge">Testnet</span>
+                            </div>
+                            <div class="morpho-custom-option" data-value="arbitrumOne">
+                                <span class="option-text">Arbitrum One</span>
+                                <span class="option-badge">Mainnet</span>
+                            </div>
+                            <div class="morpho-custom-option" data-value="scrollSepolia">
+                                <span class="option-text">Scroll Sepolia</span>
+                                <span class="option-badge">Testnet</span>
+                            </div>
+                            <div class="morpho-custom-option" data-value="scroll">
+                                <span class="option-text">Scroll Mainnet</span>
+                                <span class="option-badge">Mainnet</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div id="balanceContainer" class="morpho-balance hidden">
                     <span>Saldo: </span>
@@ -85,6 +114,7 @@
             <button data-nav="finanzas">Finanzas</button>
             <button data-nav="creadores">Creadores</button>
             <button data-nav="arbitrum">Arbitrum</button>
+            <button data-nav="scroll">Scroll</button>
             <button class="col-span-2" data-nav="deploy">Desplegar Stylus</button>
         </div>
         
@@ -134,6 +164,15 @@
                     <button class="btn-morpho btn-morpho-ghost" data-nav="arbitrum">Ver más</button>
                 </div>
             </div>
+            
+            <!-- Segunda fila de categorías -->
+            <div class="grid-morpho grid-morpho-3 mt-6">
+                <div class="morpho-card scroll-reveal-enhanced">
+                    <h3 class="text-xl font-light mb-3">DeFi & Sistemas de Pago en Scroll</h3>
+                    <p class="text-gray-400 mb-4">Aplicaciones financieras innovadoras construidas sobre zkEVM de Scroll.</p>
+                    <button class="btn-morpho btn-morpho-ghost" data-nav="scroll">Ver más</button>
+                </div>
+            </div>
 
             <!-- Features solo en Inicio -->
             <div class="grid-morpho grid-morpho-3 mt-12">
@@ -161,6 +200,15 @@
                     <p class="text-gray-400 mb-6">Pagos y productos DeFi rápidos y económicos en Arbitrum.</p>
                     <button class="btn-morpho btn-morpho-accent" data-nav="arbitrum">
                         Ir a Arbitrum
+                    </button>
+                </div>
+                
+                <div class="morpho-card scroll-reveal-enhanced">
+                    <div class="text-4xl mb-4">🚀</div>
+                    <h3 class="text-xl font-light mb-3">Scroll zkEVM</h3>
+                    <p class="text-gray-400 mb-6">DeFi y pagos con velocidad, seguridad y compatibilidad nativa de Ethereum.</p>
+                    <button class="btn-morpho btn-morpho-accent" data-nav="scroll">
+                        Ir a Scroll
                     </button>
                 </div>
             </div>
@@ -395,6 +443,104 @@
             </div>
         </section>
 
+        <!-- Sección DeFi & Sistemas de Pago en Scroll -->
+        <section id="section-scroll" class="section-morpho hidden">
+            <div class="flex items-center gap-4 mb-6 flex-wrap">
+                <h2 class="section-morpho-title text-gradient-morpho">DeFi & Sistemas de Pago en Scroll</h2>
+                <span class="badge-morpho">
+                    <i class="fas fa-layer-group"></i> Powered by zkEVM
+                </span>
+            </div>
+            <p class="section-morpho-subtitle">El track DeFi y Sistemas de Pago en Scroll invita a los participantes a aprovechar la velocidad, seguridad y compatibilidad de esta capa 2 basada en zkEVM para construir la próxima generación de aplicaciones financieras.</p>
+            
+            <div class="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg p-6 mb-8">
+                <p class="text-lg text-gray-200 mb-4"><strong>Scroll ofrece un entorno ideal para desarrollar soluciones de pagos y productos DeFi eficientes</strong></p>
+                <p class="text-gray-300">Con costos reducidos y una experiencia de usuario fluida, Scroll es la plataforma perfecta para construir aplicaciones financieras que transformen la manera en que interactuamos con las finanzas onchain.</p>
+            </div>
+
+            <ul class="list-morpho mb-8">
+                <li>Aplicaciones DeFi escalables con compatibilidad nativa de Ethereum</li>
+                <li>Sistemas de pago eficientes con costos reducidos</li>
+                <li>Velocidad y seguridad gracias a zkEVM</li>
+                <li>Experiencia de usuario fluida y accesible</li>
+                <li>Herramientas financieras innovadoras y escalables</li>
+            </ul>
+
+            <div class="grid-morpho grid-morpho-3 mb-8">
+                <div class="morpho-card">
+                    <div class="text-4xl mb-4">🔐</div>
+                    <h3 class="text-xl font-light mb-3">Seguridad zkEVM</h3>
+                    <p class="text-gray-400">Combinación de pruebas zero-knowledge con compatibilidad total de EVM para máxima seguridad y eficiencia.</p>
+                </div>
+                
+                <div class="morpho-card">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-light mb-3">Velocidad y Escalabilidad</h3>
+                    <p class="text-gray-400">Procesa transacciones rápidamente con costos de gas significativamente reducidos comparado con Ethereum mainnet.</p>
+                </div>
+                
+                <div class="morpho-card">
+                    <div class="text-4xl mb-4">🔄</div>
+                    <h3 class="text-xl font-light mb-3">Compatibilidad Total</h3>
+                    <p class="text-gray-400">Ejecuta contratos de Solidity sin modificaciones. Mismo código, mejor rendimiento y menores costos.</p>
+                </div>
+            </div>
+
+            <div class="morpho-card mb-8">
+                <h3 class="text-xl font-light mb-4">🌐 Acerca de Scroll</h3>
+                <p class="text-gray-300 mb-4">Scroll es una capa 2 de Ethereum basada en zkEVM que ofrece compatibilidad bytecode-level con Ethereum. Esto significa que puedes desplegar tus contratos existentes sin cambios y aprovechar:</p>
+                
+                <div class="bg-gray-700/50 rounded p-4">
+                    <p class="text-gray-200 mb-3"><strong>Ventajas clave de Scroll:</strong></p>
+                    <ul class="list-disc list-inside text-gray-300 space-y-2">
+                        <li><strong>zkEVM nativo:</strong> Pruebas zero-knowledge para máxima seguridad y eficiencia</li>
+                        <li><strong>Costos reducidos:</strong> Hasta un 95% más económico que Ethereum mainnet</li>
+                        <li><strong>Velocidad mejorada:</strong> Confirmaciones rápidas con alta throughput</li>
+                        <li><strong>Compatibilidad total:</strong> Funciona con todas las herramientas y librerías de Ethereum</li>
+                        <li><strong>Escalabilidad:</strong> Diseñado para soportar el crecimiento de aplicaciones DeFi</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="morpho-card">
+                <h3 class="text-xl font-light mb-4">🚀 Casos de Uso</h3>
+                <div class="grid-morpho grid-morpho-2 gap-4">
+                    <div>
+                        <h4 class="text-lg font-light mb-2 text-purple-400">💳 Sistemas de Pago</h4>
+                        <p class="text-gray-400">Construye soluciones de pago eficientes con costos bajos para usuarios y comerciantes.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-light mb-2 text-purple-400">🏦 Protocolos DeFi</h4>
+                        <p class="text-gray-400">Desarrolla lending, borrowing y trading protocols con escalabilidad mejorada.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-light mb-2 text-purple-400">💸 Remesas y Transferencias</h4>
+                        <p class="text-gray-400">Facilita transferencias de valor internacionales con costos mínimos.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-light mb-2 text-purple-400">📊 Trading y Liquidez</h4>
+                        <p class="text-gray-400">Crea DEXs y plataformas de liquidez con mejor experiencia de usuario.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-xl font-light mb-4">✨ Se buscan proyectos que integren la tecnología de Scroll</h3>
+                <p class="text-gray-300 mb-6">Para crear herramientas financieras innovadoras, accesibles y escalables, capaces de transformar la manera en que interactuamos con las finanzas onchain.</p>
+                <div class="grid-morpho grid-morpho-3">
+                    <button class="btn-morpho btn-morpho-accent" onclick="alert('Conecta tu wallet para comenzar a construir en Scroll')">
+                        <i class="fas fa-rocket mr-2"></i>Construir en Scroll
+                    </button>
+                    <button class="btn-morpho btn-morpho-primary" onclick="window.open('https://docs.scroll.io/', '_blank')">
+                        <i class="fas fa-book mr-2"></i>Documentación Scroll
+                    </button>
+                    <button class="btn-morpho btn-morpho-ghost" onclick="alert('Asegúrate de tener ETH en Scroll Sepolia para gas')">
+                        <i class="fas fa-info-circle mr-2"></i>Obtener ETH Testnet
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- Sección Desplegar Stylus -->
         <section id="section-deploy" class="mt-12 hidden">
             <div class="flex items-center gap-4 mb-4">
@@ -594,7 +740,7 @@
                     <i class="fas fa-crown"></i>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">¡Se requiere membresía!</h3>
-                <p class="text-gray-300 mb-6">Para acceder a esta funcionalidad, necesitas ser miembro de PixelGrant.</p>
+                <p class="text-gray-300 mb-6">Para acceder a esta funcionalidad, necesitas ser miembro de Impulso Web3.</p>
                 <div class="flex space-x-4 justify-center">
                     <button class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-all duration-300" onclick="closeMembershipModal()">
                         <i class="fas fa-times mr-2"></i>Cancelar

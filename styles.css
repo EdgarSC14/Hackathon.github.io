@@ -330,7 +330,7 @@ button:hover::after {
     --background-color-secondary: rgba(255, 255, 255, 0.1);
 }
 
-/* Barra de navegación estilo Morpho */
+/* Barra de navegación estilo Morpho - Mejorada */
 nav.morpho-nav {
     position: fixed;
     top: 0;
@@ -338,11 +338,34 @@ nav.morpho-nav {
     bottom: auto;
     left: 0;
     z-index: 90;
-    background-color: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
     padding: var(--spacing-M) var(--spacing-L);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    animation: navFadeIn 0.6s cubic-bezier(0.36, 0.2, 0.07, 1);
+    will-change: background-color, backdrop-filter;
 }
+
+/* Efecto de scroll en la navegación */
+nav.morpho-nav.scrolled {
+    background-color: rgba(10, 10, 10, 0.95);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes navFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Removido el efecto hover en toda la navegación para evitar sombreado incorrecto */
 
 nav.morpho-nav .nav-container {
     max-width: 1680px;
@@ -353,29 +376,88 @@ nav.morpho-nav .nav-container {
     align-items: center;
 }
 
-/* Logo/Título */
+/* Logo/Título - Mejorado */
 nav.morpho-nav .nav-brand {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 400;
+    font-weight: 500;
     font-size: 20px;
     line-height: 160%;
     color: var(--color-primary);
     text-decoration: none;
-    transition: color 0.2s ease-out;
+    transition: all 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
+    position: relative;
+    display: inline-block;
+}
+
+nav.morpho-nav .nav-brand::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.8), rgba(87, 146, 255, 0.8));
+    transition: width 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
 }
 
 nav.morpho-nav .nav-brand:hover {
     color: var(--color-primary);
+    transform: translateY(-1px);
 }
 
-/* Contenedor de navegación */
+nav.morpho-nav .nav-brand:hover::after {
+    width: 100%;
+}
+
+/* Contenedor de navegación - Mejorado */
 nav.morpho-nav .nav-links {
     display: flex;
     gap: var(--spacing-XS);
     align-items: center;
+    position: relative;
 }
 
-/* Botones redondeados estilo Morpho */
+/* Animación de entrada para los links de navegación */
+nav.morpho-nav .nav-links .morpho-nav-button {
+    animation: navButtonFadeIn 0.6s cubic-bezier(0.36, 0.2, 0.07, 1) backwards;
+}
+
+nav.morpho-nav .nav-links .morpho-nav-button:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+nav.morpho-nav .nav-links .morpho-nav-button:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+nav.morpho-nav .nav-links .morpho-nav-button:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+nav.morpho-nav .nav-links .morpho-nav-button:nth-child(4) {
+    animation-delay: 0.25s;
+}
+
+nav.morpho-nav .nav-links .morpho-nav-button:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+nav.morpho-nav .nav-links .morpho-nav-button:nth-child(6) {
+    animation-delay: 0.35s;
+}
+
+@keyframes navButtonFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botones redondeados estilo Morpho - Mejorados */
 .morpho-rounded-button {
     padding: 0 var(--spacing-S);
     color: var(--color-primary);
@@ -387,7 +469,7 @@ nav.morpho-nav .nav-links {
     align-items: center;
     border-radius: 22px;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     flex-grow: 0;
     flex-shrink: 0;
@@ -400,7 +482,9 @@ nav.morpho-nav .nav-links {
     line-height: 160%;
     background: transparent;
     border: none;
-    transition: color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    transform: translateZ(0);
+    will-change: transform, color;
 }
 
 @media (max-width: 767px) {
@@ -414,63 +498,430 @@ nav.morpho-nav .nav-links {
 .morpho-rounded-button:focus-visible,
 .morpho-rounded-button:hover {
     color: var(--color-primary);
+    transform: translateY(-1px) translateZ(0);
 }
 
-/* Estilo ghost para botones de navegación */
+.morpho-rounded-button:active {
+    transform: translateY(0) scale(0.98) translateZ(0);
+    transition: transform 0.1s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+/* Estilo ghost para botones de navegación - Mejorado */
 .morpho-nav-button {
-    transition: color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
     color: var(--color-secondary);
+    position: relative;
+    overflow: visible;
 }
 
-.morpho-nav-button:focus-visible,
+.morpho-nav-button::before {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: calc(100% - 16px);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.6), transparent);
+    border-radius: 2px;
+    transition: transform 0.4s cubic-bezier(0.36, 0.2, 0.07, 1), opacity 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    opacity: 0;
+    z-index: 1;
+}
+
+.morpho-nav-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.05);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
+    pointer-events: none;
+    z-index: 0;
+}
+
 .morpho-nav-button:hover {
     color: var(--color-primary);
+    transform: translateY(-1px);
 }
 
-/* Botón con fondo gris */
+.morpho-nav-button:hover::before {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 1;
+}
+
+.morpho-nav-button:hover::after {
+    opacity: 0; /* Deshabilitado para eliminar sombreado */
+    display: none;
+}
+
+/* Estado activo para botones de navegación */
+.morpho-nav-button.active {
+    color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.morpho-nav-button.active::before {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 1;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.8), transparent);
+}
+
+.morpho-nav-button.active::after {
+    opacity: 0; /* Deshabilitado para eliminar sombreado */
+    display: none;
+}
+
+/* Botón con fondo gris - Mejorado */
 .morpho-button-grey {
-    transition: background-color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
     background: var(--background-color-secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+.morpho-button-grey::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s cubic-bezier(0.36, 0.2, 0.07, 1), height 0.6s cubic-bezier(0.36, 0.2, 0.07, 1);
 }
 
 .morpho-button-grey:focus-visible,
 .morpho-button-grey:hover {
     background: var(--color-tertiary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.morpho-button-grey:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.morpho-button-grey:active {
+    transform: translateY(0) scale(0.98);
 }
 
 /* Selector de red */
+/* Contenedor para el select con icono personalizado */
+.morpho-select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.morpho-select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
+    z-index: 1;
+}
+
+.morpho-select-wrapper:hover::after,
+.morpho-select:focus + .morpho-select-wrapper::after,
+.morpho-select-wrapper:hover::after {
+    border-top-color: rgba(139, 92, 246, 0.9);
+}
+
 .morpho-select {
-    background-color: var(--background-color-secondary);
-    color: var(--color-primary);
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 20, 20, 0.6) !important;
+    background-image: linear-gradient(to bottom, rgba(139, 92, 246, 0.05), rgba(139, 92, 246, 0.02)) !important;
+    color: var(--color-primary) !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
     border-radius: 22px;
-    padding: 0 var(--spacing-S);
+    padding: 0 44px 0 var(--spacing-S);
     height: 44px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 160%;
     cursor: pointer;
-    transition: background-color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    outline: none;
+    /* Asegurar que el texto sea visible */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    min-width: 160px;
+    width: 100%;
 }
 
 .morpho-select:focus-visible,
 .morpho-select:hover {
-    background: var(--color-tertiary);
+    background: rgba(30, 30, 30, 0.8) !important;
+    background-image: linear-gradient(to bottom, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(139, 92, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.morpho-select:focus {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15), 0 4px 20px rgba(139, 92, 246, 0.2);
+}
+
+.morpho-select:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown personalizado - Estilos mejorados */
+.morpho-custom-select {
+    position: relative;
+    min-width: 180px;
+}
+
+.morpho-custom-select-trigger {
+    background: rgba(20, 20, 20, 0.6);
+    background-image: linear-gradient(to bottom, rgba(139, 92, 246, 0.05), rgba(139, 92, 246, 0.02));
+    color: var(--color-primary);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 0 44px 0 var(--spacing-S);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 160%;
+}
+
+.morpho-custom-select-trigger:hover {
+    background: rgba(30, 30, 30, 0.8) !important;
+    background-image: linear-gradient(to bottom, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+    border-color: rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15), 0 0 0 1px rgba(139, 92, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.morpho-custom-select-trigger.active {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15), 0 4px 20px rgba(139, 92, 246, 0.2);
+}
+
+.morpho-select-value {
+    flex: 1;
+    text-align: left;
+}
+
+.morpho-select-arrow {
+    width: 12px;
+    height: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: transform 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.morpho-custom-select-trigger.active .morpho-select-arrow {
+    transform: rotate(180deg);
+    color: rgba(139, 92, 246, 0.9);
+}
+
+.morpho-custom-select-options {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: rgba(15, 15, 15, 0.98);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.1);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
+    z-index: 1000;
+    max-height: 0;
+    overflow-y: auto;
+}
+
+.morpho-custom-select-options.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    max-height: 400px;
+}
+
+.morpho-custom-option {
+    padding: 14px 50px 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.36, 0.2, 0.07, 1);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    color: var(--color-primary);
+}
+
+.morpho-custom-option:last-child {
+    border-bottom: none;
+}
+
+.morpho-custom-option::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, rgba(139, 92, 246, 0.8), rgba(139, 92, 246, 0.4));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.morpho-custom-option:hover {
+    background: rgba(139, 92, 246, 0.12);
+    color: rgba(255, 255, 255, 0.95);
+    padding-left: 20px;
+}
+
+.morpho-custom-option:hover::before {
+    opacity: 1;
+}
+
+.morpho-custom-option.selected {
+    background: rgba(139, 92, 246, 0.15);
+    color: rgba(255, 255, 255, 1);
+    font-weight: 500;
+}
+
+.morpho-custom-option.selected::before {
+    opacity: 1;
+}
+
+.morpho-custom-option.selected::after {
+    content: '✓';
+    position: absolute;
+    right: 16px;
+    color: rgba(139, 92, 246, 0.9);
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+}
+
+.option-text {
+    flex: 1;
+    text-align: left;
+}
+
+.option-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: rgba(139, 92, 246, 0.15);
+    color: rgba(139, 92, 246, 0.9);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+}
+
+.morpho-custom-option:hover .option-badge {
+    background: rgba(139, 92, 246, 0.25);
+    color: rgba(139, 92, 246, 1);
+}
+
+.morpho-custom-option.selected .option-badge {
+    background: rgba(139, 92, 246, 0.3);
+    color: rgba(255, 255, 255, 1);
+}
+
+/* Asegurar que el texto seleccionado sea visible en todos los navegadores */
+.morpho-select::-ms-value {
+    background-color: transparent !important;
+    color: var(--color-primary) !important;
+}
+
+/* Asegurar contraste para el texto del select en todos los estados */
+.morpho-select:focus,
+.morpho-select:active {
+    color: var(--color-primary) !important;
+}
+
+/* Estilo para cuando está abierto (solo visual, no funcional en todos los navegadores) */
+.morpho-select:active ~ .morpho-select-wrapper::after,
+.morpho-select-wrapper:has(.morpho-select:active)::after {
+    transform: translateY(-50%) rotate(180deg);
 }
 
 @media (max-width: 767px) {
-    .morpho-select {
+    .morpho-custom-select {
+        min-width: 140px;
+    }
+    
+    .morpho-custom-select-trigger {
         font-size: 14px;
         height: 40px;
+        padding: 0 40px 0 12px;
+    }
+    
+    .morpho-select-arrow {
+        width: 10px;
+        height: 6px;
+    }
+    
+    .morpho-custom-option {
+        font-size: 14px;
+        padding: 12px 14px;
+    }
+    
+    .option-badge {
+        font-size: 10px;
+        padding: 3px 6px;
     }
 }
 
-/* Contenedor de acciones */
+/* Contenedor de acciones - Mejorado */
 nav.morpho-nav .nav-actions {
     display: flex;
     gap: var(--spacing-S);
     align-items: center;
+    animation: navActionsFadeIn 0.6s cubic-bezier(0.36, 0.2, 0.07, 1) 0.2s backwards;
+}
+
+@keyframes navActionsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Balance container */
@@ -885,6 +1336,22 @@ h1, h2, h3, h4, h5, h6 {
 .section-morpho {
     padding: calc(var(--spacing-XXL) * 1.5) 0;
     position: relative;
+    animation: sectionFadeIn 0.6s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-morpho.hidden {
+    display: none !important;
 }
 
 .section-morpho-title {
@@ -979,6 +1446,16 @@ h1, h2, h3, h4, h5, h6 {
     gap: var(--spacing-L);
 }
 
+.grid-morpho-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 767px) {
+    .grid-morpho-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
 .grid-morpho-3 {
     grid-template-columns: repeat(3, 1fr);
 }
@@ -1044,6 +1521,18 @@ h1, h2, h3, h4, h5, h6 {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-S);
     margin-bottom: var(--spacing-L);
+    animation: mobileNavFadeIn 0.6s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+@keyframes mobileNavFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (min-width: 768px) {
@@ -1063,13 +1552,48 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 400;
     transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(0);
+}
+
+.nav-mobile-morpho button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(139, 92, 246, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s cubic-bezier(0.36, 0.2, 0.07, 1), height 0.5s cubic-bezier(0.36, 0.2, 0.07, 1);
 }
 
 .nav-mobile-morpho button:hover,
 .nav-mobile-morpho button:focus {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.4);
     color: var(--color-primary);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.nav-mobile-morpho button:hover::before {
+    width: 200px;
+    height: 200px;
+}
+
+.nav-mobile-morpho button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Estado activo para navegación móvil */
+.nav-mobile-morpho button.active {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: var(--color-primary);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 /* Lista estilo Morpho */
@@ -1170,7 +1694,7 @@ section {
 .hero-title-section {
     position: relative;
     width: 100%;
-    padding: calc(var(--spacing-XXL) * 2) 0 var(--spacing-XXL) 0;
+    padding: calc(var(--spacing-XXL) * 2) 0 0 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1210,7 +1734,8 @@ section {
     line-height: 1.6;
     color: var(--color-secondary);
     max-width: 800px;
-    margin: 0 auto;
+    margin: 0 auto 0 auto;
+    padding-bottom: 0;
     font-weight: 300;
 }
 
@@ -1230,7 +1755,8 @@ section {
     align-items: center;
     justify-content: center;
     margin-bottom: calc(var(--spacing-XXL) * 2);
-    padding: var(--spacing-XXL) 0;
+    padding: 0 0 var(--spacing-XXL) 0;
+    margin-top: -120px;
 }
 
 @media (max-width: 767px) {

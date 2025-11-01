@@ -93,8 +93,24 @@ particlesJS('particles-js', {
 });
 */
 
-// Animaciones al scroll mejoradas
+// Animaciones al scroll mejoradas y efectos de navegación
 document.addEventListener('DOMContentLoaded', () => {
+    // Efecto de scroll en la navegación
+    const nav = document.querySelector('nav.morpho-nav');
+    let lastScroll = 0;
+    
+    function handleScroll() {
+        const currentScroll = window.scrollY;
+        if (currentScroll > 50) {
+            nav?.classList.add('scrolled');
+        } else {
+            nav?.classList.remove('scrolled');
+        }
+        lastScroll = currentScroll;
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Ejecutar una vez al cargar
     // Animaciones para elementos antiguos
     const elements = document.querySelectorAll('.scroll-reveal');
     
@@ -902,15 +918,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Navegación de secciones
+    // Navegación de secciones con animaciones suaves
     function showSection(key) {
-        const ids = ['home','finanzas','creadores','arbitrum','deploy'];
-        ids.forEach(k => {
-            const el = document.getElementById(`section-${k}`);
-            if (el) {
-                if (k === key) el.classList.remove('hidden'); else el.classList.add('hidden');
-            }
-        });
+        const ids = ['home','finanzas','creadores','arbitrum','scroll','deploy'];
+        
+        // Obtener la sección actual visible
+        const currentSection = document.querySelector('.section-morpho:not(.hidden)');
+        
+        // Fade out de la sección actual
+        if (currentSection && currentSection.id !== `section-${key}`) {
+            currentSection.style.opacity = '0';
+            currentSection.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                ids.forEach(k => {
+                    const el = document.getElementById(`section-${k}`);
+                    if (el) {
+                        if (k === key) {
+                            el.classList.remove('hidden');
+                            el.style.opacity = '0';
+                            el.style.transform = 'translateY(10px)';
+                            
+                            // Fade in de la nueva sección
+                            requestAnimationFrame(() => {
+                                el.style.transition = 'opacity 0.5s cubic-bezier(0.36, 0.2, 0.07, 1), transform 0.5s cubic-bezier(0.36, 0.2, 0.07, 1)';
+                                el.style.opacity = '1';
+                                el.style.transform = 'translateY(0)';
+                            });
+                        } else {
+                            el.classList.add('hidden');
+                            el.style.opacity = '1';
+                            el.style.transform = 'translateY(0)';
+                        }
+                    }
+                });
+            }, 150);
+        } else {
+            // Primera carga o misma sección
+            ids.forEach(k => {
+                const el = document.getElementById(`section-${k}`);
+                if (el) {
+                    if (k === key) {
+                        el.classList.remove('hidden');
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateY(0)';
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                }
+            });
+        }
         
         // Mostrar/ocultar hero section (título y descripción) solo en inicio
         const heroTitleSection = document.querySelector('.hero-title-section');
@@ -920,9 +977,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (key === 'home') {
                 heroTitleSection.classList.remove('hidden');
                 heroTitleSection.style.display = 'flex';
+                heroTitleSection.style.opacity = '0';
+                setTimeout(() => {
+                    heroTitleSection.style.transition = 'opacity 0.5s cubic-bezier(0.36, 0.2, 0.07, 1)';
+                    heroTitleSection.style.opacity = '1';
+                }, 50);
             } else {
-                heroTitleSection.classList.add('hidden');
-                heroTitleSection.style.display = 'none';
+                heroTitleSection.style.opacity = '0';
+                setTimeout(() => {
+                    heroTitleSection.classList.add('hidden');
+                    heroTitleSection.style.display = 'none';
+                }, 300);
             }
         }
         
@@ -930,33 +995,167 @@ document.addEventListener('DOMContentLoaded', function() {
             if (key === 'home') {
                 heroCircleSection.classList.remove('hidden');
                 heroCircleSection.style.display = 'flex';
+                heroCircleSection.style.opacity = '0';
+                setTimeout(() => {
+                    heroCircleSection.style.transition = 'opacity 0.5s cubic-bezier(0.36, 0.2, 0.07, 1)';
+                    heroCircleSection.style.opacity = '1';
+                }, 100);
             } else {
-                heroCircleSection.classList.add('hidden');
-                heroCircleSection.style.display = 'none';
+                heroCircleSection.style.opacity = '0';
+                setTimeout(() => {
+                    heroCircleSection.classList.add('hidden');
+                    heroCircleSection.style.display = 'none';
+                }, 300);
             }
+        }
+        
+        // Scroll suave al inicio si no estamos en home
+        if (key !== 'home') {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
     document.querySelectorAll('[data-nav]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const key = e.currentTarget.getAttribute('data-nav');
-            showSection(key === 'home' ? 'home' : key);
+            const finalKey = key === 'home' ? 'home' : key;
+            
+            // Actualizar estado activo de los botones
+            document.querySelectorAll('[data-nav]').forEach(b => {
+                b.classList.remove('active');
+            });
+            e.currentTarget.classList.add('active');
+            
+            showSection(finalKey);
+        });
+    });
+    
+    // Marcar botón de inicio como activo al cargar
+    document.querySelectorAll('[data-nav="home"]').forEach(btn => {
+        btn.classList.add('active');
+    });
+    
+    // Actualizar estado activo cuando cambia la sección (por si cambia de otra forma)
+    function updateActiveNavButton() {
+        const visibleSection = document.querySelector('.section-morpho:not(.hidden)');
+        if (visibleSection) {
+            const sectionId = visibleSection.id;
+            const sectionKey = sectionId.replace('section-', '');
+            
+            document.querySelectorAll('[data-nav]').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-nav') === sectionKey) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+    }
+    
+    // Observar cambios en las secciones para actualizar botones activos
+    const sectionObserver = new MutationObserver(() => {
+        updateActiveNavButton();
+    });
+    
+    document.querySelectorAll('.section-morpho').forEach(section => {
+        sectionObserver.observe(section, {
+            attributes: true,
+            attributeFilter: ['class']
         });
     });
 
     // Mostrar home al inicio
     showSection('home');
 
-    // Selector de red
+    // Selector de red personalizado
     const networkSelector = document.getElementById('networkSelector');
-    if (networkSelector) {
+    const customSelect = document.querySelector('.morpho-custom-select');
+    const customSelectTrigger = document.querySelector('.morpho-custom-select-trigger');
+    const customSelectOptions = document.querySelector('.morpho-custom-select-options');
+    const customOptions = document.querySelectorAll('.morpho-custom-option');
+    const selectValue = document.querySelector('.morpho-select-value');
+    
+    if (networkSelector && customSelect) {
+        // Función para actualizar el valor mostrado
+        function updateSelectValue(value) {
+            const selectedOption = customOptions[Array.from(customOptions).findIndex(opt => opt.dataset.value === value)];
+            if (selectedOption) {
+                selectValue.textContent = selectedOption.querySelector('.option-text').textContent;
+                // Actualizar estado selected
+                customOptions.forEach(opt => opt.classList.remove('selected'));
+                selectedOption.classList.add('selected');
+            }
+        }
+        
+        // Inicializar con el valor actual del select
+        if (networkSelector.value) {
+            updateSelectValue(networkSelector.value);
+        }
+        
+        // Abrir/cerrar dropdown
+        if (customSelectTrigger) {
+            customSelectTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = customSelectOptions.classList.contains('show');
+                
+                if (isOpen) {
+                    customSelectOptions.classList.remove('show');
+                    customSelectTrigger.classList.remove('active');
+                } else {
+                    customSelectOptions.classList.add('show');
+                    customSelectTrigger.classList.add('active');
+                }
+            });
+        }
+        
+        // Seleccionar opción
+        customOptions.forEach(option => {
+            option.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const value = option.dataset.value;
+                
+                // Actualizar select nativo
+                networkSelector.value = value;
+                
+                // Actualizar valor mostrado
+                updateSelectValue(value);
+                
+                // Cerrar dropdown
+                customSelectOptions.classList.remove('show');
+                customSelectTrigger.classList.remove('active');
+                
+                // Disparar evento change
+                currentNetworkKey = value;
+                try {
+                    await checkAndSwitchNetwork(currentNetworkKey);
+                    await updateBalance();
+                    // Actualizar balance Stylus
+                    if (typeof refreshStylusBalance === 'function') {
+                        await refreshStylusBalance();
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+        });
+        
+        // Cerrar al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!customSelect.contains(e.target)) {
+                customSelectOptions.classList.remove('show');
+                customSelectTrigger.classList.remove('active');
+            }
+        });
+        
+        // También mantener el listener del select nativo por si acaso
         networkSelector.addEventListener('change', async () => {
             currentNetworkKey = networkSelector.value;
+            updateSelectValue(currentNetworkKey);
             try {
                 await checkAndSwitchNetwork(currentNetworkKey);
                 await updateBalance();
-                // checkSubscription eliminado: no usamos membresías
-                // Actualizar balance Stylus
                 if (typeof refreshStylusBalance === 'function') {
                     await refreshStylusBalance();
                 }
@@ -1364,53 +1563,8 @@ async function invest(amount) {
     }
 }
 
-// Estilos para el logo PixelGrant
-const style = document.createElement('style');
-style.textContent = `
-    .pixel-grant-logo {
-        font-size: 2rem;
-        font-weight: 800;
-        background: linear-gradient(45deg, #8B5CF6, #EC4899);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        text-shadow: 2px 2px 4px rgba(139, 92, 246, 0.2);
-        letter-spacing: 0.05em;
-        position: relative;
-        display: inline-block;
-        transition: all 0.3s ease;
-    }
-
-    .pixel-grant-logo:hover {
-        transform: scale(1.05);
-        text-shadow: 3px 3px 6px rgba(139, 92, 246, 0.3);
-    }
-
-    .pixel-grant-logo::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #8B5CF6, transparent);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-
-    .pixel-grant-logo:hover::after {
-        transform: scaleX(1);
-    }
-`;
-document.head.appendChild(style);
-
-// Actualizar el elemento del logo
-document.addEventListener('DOMContentLoaded', function() {
-    const logoElement = document.querySelector('.text-xl.font-bold');
-    if (logoElement) {
-        logoElement.classList.add('pixel-grant-logo');
-    }
-}); 
+// Estilos para el logo Impulso Web3 (ya está estilizado en CSS, este código se mantiene por compatibilidad)
+// El logo ahora usa la clase .nav-brand definida en styles.css 
 
 // ==========================
 // Asistente IA (Gemini)
@@ -1435,7 +1589,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!toggleBtn || !chatWindow || !chatForm || !chatInput || !chatMessages) return;
 
     // Establecer título del chat con la marca actual visible en la página
-    const detectedBrand = (document.querySelector('nav .text-xl.font-bold')?.textContent || '').trim() || 'Impulso Web3';
+    const detectedBrand = (document.querySelector('nav .nav-brand')?.textContent || '').trim() || 'Impulso Web3';
     if (chatTitle) {
         chatTitle.textContent = `Asistente ${detectedBrand}`;
     }
@@ -1475,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	function getPageContext() {
 		const ctx = [];
 		// Branding / hero
-		ctx.push(`Marca: ${getTextSafe(document.querySelector('nav .text-xl.font-bold')) || 'PixelGrant'}`);
+		ctx.push(`Marca: ${getTextSafe(document.querySelector('nav .nav-brand')) || 'Impulso Web3'}`);
 		ctx.push(`Hero: ${getTextSafe(document.querySelector('.hero-text'))}`);
 		// Beneficios
 		const benefits = Array.from(document.querySelectorAll('#notSubscribedInterface ul li span')).map(el => getTextSafe(el)).filter(Boolean);

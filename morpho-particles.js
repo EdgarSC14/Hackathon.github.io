@@ -83,12 +83,12 @@ class MorphoParticles {
                 y: 0,
                 targetX: 0,
                 targetY: 0,
-                size: 2 + Math.random() * 2, // Tamaño variado entre 2-4 para efecto más orgánico
-                opacity: 0.6 + Math.random() * 0.3, // Opacidad variada
-                hue: 240 + Math.sin(i / 10) * 20 + (i % 15) * 1.5, // Variación de color más suave
+                size: 1.5 + Math.random() * 1.5, // Tamaño más pequeño y variado entre 1.5-3 para estilo más sutil
+                opacity: 0.8 + Math.random() * 0.2, // Opacidad más alta para mejor visibilidad
+                hue: 250 + Math.sin(i / 15) * 30 + (i % 20) * 2, // Variación de color más amplia (púrpura/azul)
                 pulsePhase: Math.random() * Math.PI * 2, // Fase aleatoria para pulso
-                originalOpacity: 0.6 + Math.random() * 0.3,
-                originalSize: 2 + Math.random() * 2,
+                originalOpacity: 0.8 + Math.random() * 0.2, // Coincide con opacity inicial
+                originalSize: 1.5 + Math.random() * 1.5, // Coincide con size inicial
                 exploded: false,
                 velocityX: 0,
                 velocityY: 0,
@@ -283,9 +283,17 @@ class MorphoParticles {
             }
             
             // Crear zona de explosión - cuando el círculo está saliendo del viewport
-            const explosionTriggerDistance = window.innerHeight * 0.2; // Activar explosión cuando está a 20% del viewport
+            // Reducir la distancia de activación para que la explosión comience antes
+            const explosionTriggerDistance = window.innerHeight * 0.15; // Activar explosión cuando está a 15% del viewport
             
-            if (distanceFromViewport > explosionTriggerDistance && !this.explosionTriggered) {
+            // Verificar que el círculo esté realmente saliendo (no entrando)
+            const isExiting = circleBottom < viewportTop || circleTop > viewportBottom;
+            
+            // Detectar también cuando el círculo está parcialmente fuera
+            const isPartiallyOut = (circleBottom < viewportTop && circleTop < viewportTop) || 
+                                  (circleTop > viewportBottom && circleBottom > viewportBottom);
+            
+            if ((distanceFromViewport > explosionTriggerDistance || isPartiallyOut) && isExiting && !this.explosionTriggered) {
                 // Activar explosión solo una vez
                 this.explosionTriggered = true;
                 this.explosionActive = true;
@@ -295,11 +303,20 @@ class MorphoParticles {
             
             // Si hay una explosión activa, actualizar progreso
             if (this.explosionActive) {
-                this.explosionProgress += 0.02; // Progreso de la explosión
+                // Hacer la explosión más lenta para que sea visible
+                this.explosionProgress += 0.015; // Reducido de 0.02 para hacerlo más lento
                 this.explosionProgress = Math.min(1, this.explosionProgress);
                 
                 // El círculo desaparece gradualmente durante la explosión
-                this.circleOpacity = 1 - this.explosionProgress;
+                // Mantener algo de opacidad al inicio para ver la explosión
+                if (this.explosionProgress < 0.3) {
+                    // En los primeros 30% de la explosión, mantener más opacidad para ver las partículas explotar
+                    this.circleOpacity = 1 - (this.explosionProgress / 0.3) * 0.5;
+                } else {
+                    // Después, desvanecer más rápido
+                    const fadeProgress = (this.explosionProgress - 0.3) / 0.7;
+                    this.circleOpacity = 0.5 - (fadeProgress * 0.5);
+                }
                 
                 // Si la explosión terminó, desactivar
                 if (this.explosionProgress >= 1) {
@@ -465,13 +482,17 @@ class MorphoParticles {
             opacity: Math.random() * 0.5 + 0.2,
             hue: Math.random() * 60 + 220, // Púrpura/azul
             initialized: false,
-            inCircle: true,
-            scattered: false,
+            inCircle: false, // Cambiado a false para esparcir por toda la pantalla
+            scattered: true, // Marcadas como dispersas desde el inicio
             exploded: false,
             velocityX: 0,
             velocityY: 0,
             explosionSpeed: 0,
-            explosionFade: 1
+            explosionFade: 1,
+            scatterSpeed: Math.random() * 0.15 + 0.05, // Velocidad inicial reducida para partículas dispersas
+            floatOffset: Math.random() * Math.PI * 2, // Offset para movimiento flotante
+            floatSpeed: Math.random() * 0.008 + 0.005, // Velocidad del movimiento flotante más lenta
+            floatAmplitude: Math.random() * 1.5 + 0.5 // Amplitud del movimiento flotante reducida
         };
         
         this.setParticlePosition(particle);
@@ -509,6 +530,26 @@ class MorphoParticles {
         const interactionRadius = this.circleRadius * 3;
         this.mouseNearCircle = distanceToCircle < interactionRadius;
         
+        // Interacción con partículas de fondo (siempre activa)
+        const backgroundInteractionRadius = 120; // Radio de interacción para partículas de fondo
+        
+        this.particles.forEach(p => {
+            if (!p.inCircle && p.scattered) {
+                // Partículas de fondo: interacción con el mouse
+                const dx = p.x - this.mouse.x;
+                const dy = p.y - this.mouse.y;
+                const distToMouse = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distToMouse < backgroundInteractionRadius) {
+                    // Repeler partículas de fondo del mouse
+                    const influence = 1 - (distToMouse / backgroundInteractionRadius);
+                    const force = (1 / (distToMouse + 1)) * influence * 15; // Fuerza más suave
+                    p.targetX += (dx / distToMouse) * force;
+                    p.targetY += (dy / distToMouse) * force;
+                }
+            }
+        });
+        
         if (this.mouseNearCircle) {
             // Calcular fuerza de atracción basada en la distancia del mouse
             const influence = 1 - (distanceToCircle / interactionRadius);
@@ -530,15 +571,18 @@ class MorphoParticles {
                         p.targetY += (dy / distToMouse) * force;
                     }
                     
-                    // Atracción hacia el círculo
-                    const dxToCenter = this.circleCenter.x - p.x;
-                    const dyToCenter = this.circleCenter.y - p.y;
-                    const distToCenter = Math.sqrt(dxToCenter * dxToCenter + dyToCenter * dyToCenter);
-                    
-                    if (distToCenter > 0) {
-                        const centerForce = (1 / distToCenter) * 20;
-                        p.targetX += (dxToCenter / distToCenter) * centerForce * 0.1;
-                        p.targetY += (dyToCenter / distToCenter) * centerForce * 0.1;
+                    // Atracción hacia el círculo SOLO para partículas que están en el círculo
+                    // Las partículas de fondo (inCircle: false, scattered: true) no deben ser atraídas
+                    if (p.inCircle && !p.scattered) {
+                        const dxToCenter = this.circleCenter.x - p.x;
+                        const dyToCenter = this.circleCenter.y - p.y;
+                        const distToCenter = Math.sqrt(dxToCenter * dxToCenter + dyToCenter * dyToCenter);
+                        
+                        if (distToCenter > 0) {
+                            const centerForce = (1 / distToCenter) * 20;
+                            p.targetX += (dxToCenter / distToCenter) * centerForce * 0.1;
+                            p.targetY += (dyToCenter / distToCenter) * centerForce * 0.1;
+                        }
                     }
                 }
             });
@@ -622,6 +666,12 @@ class MorphoParticles {
     
     triggerExplosion() {
         // Efecto de explosión: todas las partículas salen disparadas desde el centro
+        // Asegurar que la explosión esté activa
+        if (!this.explosionActive) {
+            this.explosionActive = true;
+            this.explosionProgress = 0;
+            this.explosionTriggered = true;
+        }
         
         // Explosión de partículas del círculo (borde)
         this.circleParticles.forEach(p => {
@@ -789,9 +839,11 @@ class MorphoParticles {
             }
         });
         
-        // Recopilar partículas normales
+        // Recopilar partículas normales SOLO si están en el círculo
+        // Las partículas de fondo (inCircle: false desde el inicio) no deben ser recopiladas
         this.particles.forEach(p => {
-            if (p.scattered || p.exploded) {
+            // Solo recopilar partículas que originalmente estaban en el círculo
+            if ((p.scattered || p.exploded) && p.inCircle === true) {
                 p.scattered = false;
                 p.exploded = false;
                 p.inCircle = true;
@@ -800,6 +852,17 @@ class MorphoParticles {
                 p.explosionFade = 1;
                 p.targetX = this.circleCenter.x + Math.cos(p.angle) * p.distance;
                 p.targetY = this.circleCenter.y + Math.sin(p.angle) * p.distance;
+            }
+            // Las partículas de fondo (inCircle: false) permanecen dispersas
+            // Solo reseteamos el estado de explosión si están explotadas
+            else if (p.exploded && !p.inCircle) {
+                p.exploded = false;
+                p.velocityX = 0;
+                p.velocityY = 0;
+                p.explosionFade = 1;
+                // Mantener posiciones aleatorias en toda la pantalla
+                p.targetX = Math.random() * this.canvas.width;
+                p.targetY = Math.random() * this.canvas.height;
             }
         });
         this.explosionTriggered = false;
@@ -827,7 +890,12 @@ class MorphoParticles {
         // Solo dibujar el círculo si estamos en la sección home
         if (!this.isHomeSection) return;
         
-        if (this.sponsorsVisible || this.circleOpacity <= 0) return;
+        // Permitir dibujar durante la explosión incluso si circleOpacity está bajando
+        // Dibujar si hay explosión activa (para mostrar las partículas explotando)
+        if (this.sponsorsVisible) return;
+        
+        // Solo no dibujar si no hay explosión activa Y la opacidad es 0
+        if (!this.explosionActive && this.circleOpacity <= 0) return;
         
         // Actualizar posiciones de las partículas del círculo (borde)
         this.updateCircleParticlesPosition();
@@ -851,7 +919,10 @@ class MorphoParticles {
     
     drawCircleParticles() {
         this.ctx.save();
-        this.ctx.globalAlpha = this.circleOpacity;
+        
+        // Durante la explosión, usar una opacidad más alta para las partículas explotando
+        const baseAlpha = this.explosionActive ? Math.max(0.3, this.circleOpacity) : this.circleOpacity;
+        this.ctx.globalAlpha = baseAlpha;
         
         // Durante la explosión, reducir el tamaño del círculo gradualmente
         let currentRadius = this.circleRadius;
@@ -876,44 +947,55 @@ class MorphoParticles {
                 p.y += p.velocityY;
                 p.velocityX *= 0.98;
                 p.velocityY *= 0.98;
-                p.opacity = Math.max(0, p.opacity - 0.02);
+                // Reducir opacidad más lentamente durante la explosión para que sea visible
+                p.opacity = Math.max(0, p.opacity - 0.01);
             }
             
             if (p.opacity <= 0) return;
             
             this.ctx.save();
-            this.ctx.globalAlpha = p.opacity * this.circleOpacity;
+            // Para partículas en explosión, usar su propia opacidad completa para que sean visibles
+            const particleAlpha = p.exploded ? p.opacity : (p.opacity * baseAlpha);
+            this.ctx.globalAlpha = particleAlpha;
             
-            // Dibujar partícula del círculo con resplandor mejorado
-            const glowRadius = p.size * 3 * (p.glowIntensity || 1);
+            // Estilo nuevo: partículas más pequeñas y densas con efecto de estrella
+            const glowRadius = p.size * 2.5 * (p.glowIntensity || 1);
+            
+            // Gradiente exterior más compacto
             const gradient = this.ctx.createRadialGradient(
                 p.x, p.y, 0,
                 p.x, p.y, glowRadius
             );
             
-            // Gradiente más suave y con mejor resplandor
-            const centerOpacity = Math.min(1, p.opacity * 1.2);
-            const midOpacity = p.opacity * 0.6;
-            gradient.addColorStop(0, `hsla(${p.hue}, 85%, 75%, ${centerOpacity})`);
-            gradient.addColorStop(0.4, `hsla(${p.hue}, 80%, 65%, ${midOpacity})`);
-            gradient.addColorStop(0.7, `hsla(${p.hue}, 75%, 60%, ${p.opacity * 0.3})`);
-            gradient.addColorStop(1, `hsla(${p.hue}, 70%, 55%, 0)`);
+            const centerOpacity = Math.min(1, p.opacity * 1.3);
+            const midOpacity = p.opacity * 0.7;
+            gradient.addColorStop(0, `hsla(${p.hue}, 90%, 80%, ${centerOpacity})`);
+            gradient.addColorStop(0.5, `hsla(${p.hue}, 85%, 70%, ${midOpacity})`);
+            gradient.addColorStop(0.8, `hsla(${p.hue}, 80%, 65%, ${p.opacity * 0.4})`);
+            gradient.addColorStop(1, `hsla(${p.hue}, 75%, 60%, 0)`);
             
             this.ctx.fillStyle = gradient;
             this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, glowRadius * 0.6, 0, Math.PI * 2);
+            this.ctx.arc(p.x, p.y, glowRadius * 0.5, 0, Math.PI * 2);
             this.ctx.fill();
             
-            // Núcleo brillante más pequeño en el centro
+            // Núcleo más brillante y compacto
             const coreGradient = this.ctx.createRadialGradient(
                 p.x, p.y, 0,
-                p.x, p.y, p.size
+                p.x, p.y, p.size * 0.8
             );
-            coreGradient.addColorStop(0, `hsla(${p.hue}, 90%, 85%, ${centerOpacity})`);
+            coreGradient.addColorStop(0, `hsla(${p.hue}, 95%, 90%, ${centerOpacity})`);
+            coreGradient.addColorStop(0.6, `hsla(${p.hue}, 90%, 80%, ${p.opacity * 0.6})`);
             coreGradient.addColorStop(1, `hsla(${p.hue}, 85%, 75%, 0)`);
             this.ctx.fillStyle = coreGradient;
             this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+            this.ctx.arc(p.x, p.y, p.size * 0.4, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // Agregar un pequeño punto brillante en el centro para estilo más distintivo
+            this.ctx.fillStyle = `hsla(${p.hue}, 100%, 95%, ${centerOpacity})`;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size * 0.2, 0, Math.PI * 2);
             this.ctx.fill();
             
             // Dibujar conexiones entre partículas adyacentes y cercanas para formar el círculo
@@ -1040,9 +1122,46 @@ class MorphoParticles {
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance > 1) {
-                    const speed = p.scattered ? p.scatterSpeed : p.speed;
+                    // Reducir velocidad para partículas de fondo
+                    const baseSpeed = p.scattered ? (p.scatterSpeed || 0.15) : p.speed;
+                    // Aplicar velocidad más lenta para partículas de fondo
+                    const speed = (!p.inCircle && p.scattered) ? baseSpeed * 0.5 : baseSpeed;
                     p.x += (dx / distance) * speed;
                     p.y += (dy / distance) * speed;
+                } else {
+                    // Si alcanzó el objetivo y es partícula de fondo, asignar nuevo objetivo aleatorio
+                    if (!p.inCircle && p.scattered) {
+                        p.targetX = Math.random() * this.canvas.width;
+                        p.targetY = Math.random() * this.canvas.height;
+                        // Asegurar que scatterSpeed existe con velocidad reducida
+                        if (!p.scatterSpeed) {
+                            p.scatterSpeed = Math.random() * 0.15 + 0.05;
+                        }
+                    }
+                }
+                
+                // Movimiento flotante continuo para partículas de fondo (más lento)
+                if (!p.inCircle && p.scattered) {
+                    // Movimiento suave flotante usando seno/coseno para un efecto orgánico
+                    if (!p.floatOffset) {
+                        p.floatOffset = Math.random() * Math.PI * 2;
+                        p.floatSpeed = Math.random() * 0.008 + 0.005; // Más lento
+                        p.floatAmplitude = Math.random() * 1.5 + 0.5; // Amplitud reducida
+                    }
+                    
+                    const time = Date.now() * 0.001;
+                    // Reducir aún más la velocidad del movimiento flotante
+                    const floatX = Math.sin(time * p.floatSpeed + p.floatOffset) * p.floatAmplitude * 0.6;
+                    const floatY = Math.cos(time * p.floatSpeed + p.floatOffset * 1.3) * p.floatAmplitude * 0.6;
+                    
+                    p.x += floatX;
+                    p.y += floatY;
+                    
+                    // Mantener partículas dentro de los límites del canvas
+                    if (p.x < 0) p.x = this.canvas.width;
+                    if (p.x > this.canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = this.canvas.height;
+                    if (p.y > this.canvas.height) p.y = 0;
                 }
             }
             
@@ -1067,7 +1186,10 @@ class MorphoParticles {
     
     drawInnerParticles() {
         this.ctx.save();
-        this.ctx.globalAlpha = this.circleOpacity;
+        
+        // Durante la explosión, usar una opacidad más alta para las partículas explotando
+        const baseAlpha = this.explosionActive ? Math.max(0.3, this.circleOpacity) : this.circleOpacity;
+        this.ctx.globalAlpha = baseAlpha;
         
         this.innerParticles.forEach(p => {
             if (p.exploded) {
@@ -1076,13 +1198,16 @@ class MorphoParticles {
                 p.y += p.velocityY;
                 p.velocityX *= 0.98;
                 p.velocityY *= 0.98;
-                p.opacity = Math.max(0, p.opacity - 0.015);
+                // Reducir opacidad más lentamente durante la explosión para que sea visible
+                p.opacity = Math.max(0, p.opacity - 0.012);
             }
             
             if (p.opacity <= 0) return;
             
             this.ctx.save();
-            this.ctx.globalAlpha = p.opacity * this.circleOpacity;
+            // Para partículas en explosión, usar su propia opacidad completa para que sean visibles
+            const particleAlpha = p.exploded ? p.opacity : (p.opacity * baseAlpha);
+            this.ctx.globalAlpha = particleAlpha;
             
             // Dibujar partícula interna con resplandor
             const glowRadius = p.size * 2.5 * (p.glowIntensity || 1);
@@ -1200,9 +1325,11 @@ class MorphoParticles {
             if (this.isHomeSection) {
                 // Acabamos de salir de home, ocultar el círculo
                 this.isHomeSection = false;
-                // Dispersar todas las partículas del círculo
+                // Dispersar todas las partículas del círculo con explosión visible
+                this.explosionActive = true;
+                this.explosionProgress = 0;
+                this.explosionTriggered = true;
                 this.triggerExplosion();
-                this.circleOpacity = 0;
             }
         }
     }
