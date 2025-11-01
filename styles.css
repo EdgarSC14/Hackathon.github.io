@@ -1,10 +1,10 @@
-/* Estilos personalizados para GameLaunch DAO */
+                                                                                                                                                                                                                                                                                                                                                                                                                    /* Estilos personalizados para GameLaunch DAO */
 
 /* Variables de colores */
 :root {
     --primary: #8B5CF6;
     --secondary: #EC4899;
-    --dark: #1F2937;
+    --dark: #1F2937;                                                                                                                                                                                                                                    
     --darker: #111827;
 }
 
@@ -306,4 +306,1013 @@ button:hover::after {
 
 #chatMessages .avatar.bot {
     background: rgba(55, 65, 81, 0.9);
+}
+
+/* ============================================
+   ESTILOS MORPHO PARA LA BARRA DE NAVEGACIÓN
+   ============================================ */
+
+/* Variables CSS similares a Morpho */
+:root {
+    --spacing-XS: 8px;
+    --spacing-S: 12px;
+    --spacing-M: 16px;
+    --spacing-L: 24px;
+    --spacing-XL: 32px;
+    --spacing-XXL: 48px;
+    
+    --color-primary: #ffffff;
+    --color-secondary: rgba(255, 255, 255, 0.6);
+    --color-tertiary: rgba(255, 255, 255, 0.3);
+    --color-dim: rgba(255, 255, 255, 0.15);
+    --color-extra-dim: rgba(255, 255, 255, 0.05);
+    --background-color-primary: #0a0a0a;
+    --background-color-secondary: rgba(255, 255, 255, 0.1);
+}
+
+/* Barra de navegación estilo Morpho */
+nav.morpho-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    z-index: 90;
+    background-color: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+    padding: var(--spacing-M) var(--spacing-L);
+}
+
+nav.morpho-nav .nav-container {
+    max-width: 1680px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Logo/Título */
+nav.morpho-nav .nav-brand {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 160%;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease-out;
+}
+
+nav.morpho-nav .nav-brand:hover {
+    color: var(--color-primary);
+}
+
+/* Contenedor de navegación */
+nav.morpho-nav .nav-links {
+    display: flex;
+    gap: var(--spacing-XS);
+    align-items: center;
+}
+
+/* Botones redondeados estilo Morpho */
+.morpho-rounded-button {
+    padding: 0 var(--spacing-S);
+    color: var(--color-primary);
+    text-decoration: none;
+    cursor: pointer;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 0;
+    user-select: none;
+    height: 44px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+    background: transparent;
+    border: none;
+    transition: color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+@media (max-width: 767px) {
+    .morpho-rounded-button {
+        font-size: 14px;
+        height: 40px;
+        border-radius: 20px;
+    }
+}
+
+.morpho-rounded-button:focus-visible,
+.morpho-rounded-button:hover {
+    color: var(--color-primary);
+}
+
+/* Estilo ghost para botones de navegación */
+.morpho-nav-button {
+    transition: color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    color: var(--color-secondary);
+}
+
+.morpho-nav-button:focus-visible,
+.morpho-nav-button:hover {
+    color: var(--color-primary);
+}
+
+/* Botón con fondo gris */
+.morpho-button-grey {
+    transition: background-color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    background: var(--background-color-secondary);
+}
+
+.morpho-button-grey:focus-visible,
+.morpho-button-grey:hover {
+    background: var(--color-tertiary);
+}
+
+/* Selector de red */
+.morpho-select {
+    background-color: var(--background-color-secondary);
+    color: var(--color-primary);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: 0 var(--spacing-S);
+    height: 44px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+    cursor: pointer;
+    transition: background-color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+.morpho-select:focus-visible,
+.morpho-select:hover {
+    background: var(--color-tertiary);
+}
+
+@media (max-width: 767px) {
+    .morpho-select {
+        font-size: 14px;
+        height: 40px;
+    }
+}
+
+/* Contenedor de acciones */
+nav.morpho-nav .nav-actions {
+    display: flex;
+    gap: var(--spacing-S);
+    align-items: center;
+}
+
+/* Balance container */
+#balanceContainer.morpho-balance {
+    color: var(--color-secondary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+}
+
+#balanceContainer.morpho-balance #balance {
+    color: var(--color-primary);
+    font-weight: 400;
+}
+
+@media (max-width: 767px) {
+    #balanceContainer.morpho-balance {
+        font-size: 14px;
+    }
+}
+
+/* Icono de flecha animado */
+.animated-arrow-icon {
+    overflow: hidden;
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.animated-arrow-icon svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    will-change: transform;
+    width: 100%;
+    height: 100%;
+}
+
+.animated-arrow-icon > :last-child {
+    transform: translate3d(-100%, 0, 0);
+}
+
+.morpho-button-parent:focus-visible .animated-arrow-icon > :first-child,
+.morpho-button-parent:hover .animated-arrow-icon > :first-child {
+    transform: translate3d(100%, 0, 0);
+}
+
+.morpho-button-parent:focus-visible .animated-arrow-icon > :last-child,
+.morpho-button-parent:hover .animated-arrow-icon > :last-child {
+    transform: translateZ(0);
+}
+
+/* Botón con icono */
+.morpho-rounded-button.has-icon {
+    padding-right: var(--spacing-M);
+}
+
+.morpho-rounded-button.has-icon .animated-arrow-icon {
+    margin-left: var(--spacing-XS);
+}
+
+/* Botón principal (Connect Wallet) */
+#connectWallet.morpho-primary {
+    padding: 0 var(--spacing-M);
+    color: var(--color-primary);
+    background: var(--background-color-secondary);
+    transition: background-color 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+#connectWallet.morpho-primary:focus-visible,
+#connectWallet.morpho-primary:hover {
+    background: var(--color-tertiary);
+}
+
+/* Dropdown estilo Morpho */
+#walletDropdown.morpho-dropdown {
+    background-color: var(--background-color-primary);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#walletDropdown.morpho-dropdown .morpho-dropdown-item {
+    color: var(--color-secondary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+    transition: color 0.2s ease-out;
+}
+
+#walletDropdown.morpho-dropdown .morpho-dropdown-item:hover {
+    color: var(--color-primary);
+}
+
+/* Menú móvil */
+@media (max-width: 767px) {
+    nav.morpho-nav .nav-links {
+        display: none;
+    }
+    
+    nav.morpho-nav.mobile-menu-open .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: var(--background-color-primary);
+        padding: var(--spacing-S);
+        border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Espaciado para el contenido debajo del nav fijo */
+body.has-morpho-nav {
+    padding-top: 68px;
+}
+
+@media (max-width: 767px) {
+    body.has-morpho-nav {
+        padding-top: 64px;
+    }
+}
+
+/* Fondo más oscuro estilo Morpho */
+body {
+    background-color: #0a0a0a;
+}
+
+.bg-gray-900 {
+    background-color: #0a0a0a !important;
+}
+
+/* ============================================
+   ESTILOS PARA PARTÍCULAS Y SPONSORS
+   ============================================ */
+
+/* Canvas de partículas */
+#morpho-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Contenedor de sponsors */
+#sponsors-container {
+    opacity: 0;
+    transition: opacity 1s cubic-bezier(0.36, 0.2, 0.07, 1);
+    pointer-events: none;
+}
+
+#sponsors-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#sponsors-container h2 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    text-transform: none;
+}
+
+/* Logos de sponsors */
+.sponsor-logo {
+    filter: grayscale(100%);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    opacity: 0.6;
+    transform: scale(1);
+}
+
+.sponsor-logo:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.sponsor-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Animación de entrada para sponsors */
+@keyframes sponsorFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 0.6;
+        transform: translateY(0);
+    }
+}
+
+#sponsors-container.visible .sponsor-logo {
+    animation: sponsorFadeIn 0.6s cubic-bezier(0.36, 0.2, 0.07, 1) forwards;
+}
+
+#sponsors-container.visible .sponsor-logo:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+#sponsors-container.visible .sponsor-logo:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+#sponsors-container.visible .sponsor-logo:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+#sponsors-container.visible .sponsor-logo:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+#sponsors-container.visible .sponsor-logo:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+#sponsors-container.visible .sponsor-logo:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+/* Responsive para sponsors */
+@media (max-width: 767px) {
+    #sponsors-container {
+        padding: 0 20px;
+    }
+    
+    #sponsors-container h2 {
+        font-size: 20px;
+        margin-bottom: 32px;
+    }
+    
+    .sponsor-logo {
+        height: 40px;
+    }
+}
+
+/* ============================================
+   ESTILOS GLOBALES MEJORADOS ESTILO MORPHO
+   ============================================ */
+
+/* Tipografía mejorada */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+/* Tarjetas estilo Morpho mejoradas */
+.morpho-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: var(--spacing-L);
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.morpho-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(87, 146, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    pointer-events: none;
+}
+
+.morpho-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.morpho-card:hover::before {
+    opacity: 1;
+}
+
+/* Botones mejorados estilo Morpho */
+.btn-morpho {
+    padding: 0 var(--spacing-M);
+    height: 44px;
+    border-radius: 22px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-morpho-primary {
+    background: var(--background-color-secondary);
+    color: var(--color-primary);
+}
+
+.btn-morpho-primary:hover {
+    background: var(--color-tertiary);
+    transform: translateY(-2px);
+}
+
+.btn-morpho-accent {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(87, 146, 255, 0.8) 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.btn-morpho-accent:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(87, 146, 255, 1) 100%);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-morpho-ghost {
+    background: transparent;
+    color: var(--color-secondary);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-morpho-ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Inputs estilo Morpho */
+.input-morpho {
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--color-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 160%;
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    width: 100%;
+}
+
+.input-morpho::placeholder {
+    color: var(--color-secondary);
+}
+
+.input-morpho:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.input-morpho:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Select estilo Morpho */
+.select-morpho {
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--color-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 160%;
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    cursor: pointer;
+}
+
+.select-morpho:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.select-morpho:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Secciones mejoradas - Estilo Morpho */
+.section-morpho {
+    padding: calc(var(--spacing-XXL) * 1.5) 0;
+    position: relative;
+}
+
+.section-morpho-title {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-M);
+    color: var(--color-primary);
+    letter-spacing: -0.02em;
+}
+
+@media (max-width: 767px) {
+    .section-morpho-title {
+        font-size: 28px;
+    }
+}
+
+.section-morpho-subtitle {
+    color: var(--color-secondary);
+    font-size: clamp(16px, 2vw, 22px);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-L);
+    font-weight: 300;
+}
+
+@media (max-width: 767px) {
+    .section-morpho-subtitle {
+        font-size: 16px;
+    }
+}
+
+/* Stats cards mejoradas */
+.stats-card-morpho {
+    background: rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: var(--spacing-L);
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card-morpho::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.8) 0%, rgba(87, 146, 255, 0.8) 100%);
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+.stats-card-morpho:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(139, 92, 246, 0.3);
+    transform: translateY(-4px);
+}
+
+.stats-card-morpho:hover::before {
+    transform: scaleX(1);
+}
+
+.stats-number {
+    font-size: 40px;
+    font-weight: 300;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(87, 146, 255, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-XS);
+}
+
+@media (max-width: 767px) {
+    .stats-number {
+        font-size: 32px;
+    }
+}
+
+.stats-label {
+    color: var(--color-secondary);
+    font-size: 16px;
+    line-height: 160%;
+}
+
+/* Grid mejorado */
+.grid-morpho {
+    display: grid;
+    gap: var(--spacing-L);
+}
+
+.grid-morpho-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1024px) {
+    .grid-morpho-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .grid-morpho-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Badge estilo Morpho */
+.badge-morpho {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 0.5px solid rgba(139, 92, 246, 0.3);
+    color: rgba(139, 92, 246, 0.9);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 160%;
+}
+
+/* Divider estilo Morpho */
+.divider-morpho {
+    height: 0.5px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    margin: var(--spacing-L) 0;
+}
+
+/* Container mejorado - Estilo Morpho */
+.container-morpho {
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--spacing-XL);
+}
+
+@media (max-width: 1024px) {
+    .container-morpho {
+        padding: 0 var(--spacing-L);
+    }
+}
+
+@media (max-width: 767px) {
+    .container-morpho {
+        padding: 0 var(--spacing-M);
+    }
+}
+
+/* Navegación móvil mejorada */
+.nav-mobile-morpho {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-S);
+    margin-bottom: var(--spacing-L);
+}
+
+@media (min-width: 768px) {
+    .nav-mobile-morpho {
+        display: none;
+    }
+}
+
+.nav-mobile-morpho button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: var(--spacing-S) var(--spacing-M);
+    color: var(--color-secondary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.4s cubic-bezier(0.36, 0.2, 0.07, 1);
+    cursor: pointer;
+}
+
+.nav-mobile-morpho button:hover,
+.nav-mobile-morpho button:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: var(--color-primary);
+}
+
+/* Lista estilo Morpho */
+.list-morpho {
+    list-style: none;
+    padding: 0;
+}
+
+.list-morpho li {
+    padding: var(--spacing-XS) 0;
+    color: var(--color-secondary);
+    font-size: 16px;
+    line-height: 160%;
+    position: relative;
+    padding-left: var(--spacing-M);
+}
+
+.list-morpho li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(87, 146, 255, 1) 100%);
+}
+
+/* Animaciones de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.36, 0.2, 0.07, 1) forwards;
+}
+
+/* Scroll reveal mejorado */
+.scroll-reveal-enhanced {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+.scroll-reveal-enhanced.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Overlay para modales */
+.modal-overlay-morpho {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-L);
+}
+
+/* Mejoras adicionales para elementos existentes */
+main {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+}
+
+section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Espaciado mejorado del main */
+.container-morpho.py-8 {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Efecto de gradiente en textos grandes */
+.text-gradient-morpho {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.5) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Sección Hero con Título y Descripción - Estilo Morpho */
+.hero-title-section {
+    position: relative;
+    width: 100%;
+    padding: calc(var(--spacing-XXL) * 2) 0 var(--spacing-XXL) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 1;
+    min-height: 50vh;
+}
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-L);
+}
+
+.hero-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 300;
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--spacing-L);
+    color: var(--color-primary);
+    font-weight: 400;
+}
+
+@media (max-width: 767px) {
+    .hero-title {
+        font-size: clamp(36px, 10vw, 48px);
+        margin-bottom: var(--spacing-M);
+    }
+}
+
+.hero-description {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 400;
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 1.6;
+    color: var(--color-secondary);
+    max-width: 800px;
+    margin: 0 auto;
+    font-weight: 300;
+}
+
+@media (max-width: 767px) {
+    .hero-description {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+}
+
+/* Sección Hero con Círculo - Estilo Morpho */
+.hero-circle-section {
+    position: relative;
+    width: 100%;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: calc(var(--spacing-XXL) * 2);
+    padding: var(--spacing-XXL) 0;
+}
+
+@media (max-width: 767px) {
+    .hero-circle-section {
+        min-height: 60vh;
+        padding: var(--spacing-XL) 0;
+        margin-bottom: var(--spacing-XXL);
+    }
+}
+
+.circle-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Logo en el centro del círculo (fallback HTML - oculto porque se dibuja en canvas) */
+.circle-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0; /* Oculto porque se dibuja en el canvas */
+    visibility: hidden;
+}
+
+.logo-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 1.2;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: -0.02em;
+}
+
+@media (max-width: 767px) {
+    .logo-text {
+        font-size: 18px;
+    }
+}
+
+/* Ajustar sección home para que esté debajo del círculo */
+#section-home {
+    padding-top: var(--spacing-XXL);
+    margin-top: 0;
+}
+
+#section-home .section-morpho-title {
+    margin-top: 0;
+    text-align: center;
+}
+
+/* Scroll indicator estilo Morpho */
+@keyframes scrollIndicator {
+    0% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: var(--spacing-L);
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--color-secondary);
+    font-size: 14px;
+    animation: scrollIndicator 2s ease-in-out infinite;
+    z-index: 10;
+    pointer-events: none;
 }

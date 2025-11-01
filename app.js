@@ -1,4 +1,5 @@
-// Configuración de partículas
+// Configuración de partículas - DESHABILITADO (usando morpho-particles.js ahora)
+/*
 particlesJS('particles-js', {
     particles: {
         number: {
@@ -90,9 +91,11 @@ particlesJS('particles-js', {
     },
     retina_detect: true
 });
+*/
 
-// Animaciones al scroll
+// Animaciones al scroll mejoradas
 document.addEventListener('DOMContentLoaded', () => {
+    // Animaciones para elementos antiguos
     const elements = document.querySelectorAll('.scroll-reveal');
     
     const observer = new IntersectionObserver((entries) => {
@@ -107,6 +110,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     elements.forEach(element => {
         observer.observe(element);
+    });
+    
+    // Animaciones mejoradas para elementos Morpho
+    const enhancedElements = document.querySelectorAll('.scroll-reveal-enhanced');
+    
+    const enhancedObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('revealed');
+                }, index * 100); // Delay escalonado para efecto cascada
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    enhancedElements.forEach(element => {
+        enhancedObserver.observe(element);
     });
 });
 
@@ -888,6 +911,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (k === key) el.classList.remove('hidden'); else el.classList.add('hidden');
             }
         });
+        
+        // Mostrar/ocultar hero section (título y descripción) solo en inicio
+        const heroTitleSection = document.querySelector('.hero-title-section');
+        const heroCircleSection = document.querySelector('.hero-circle-section');
+        
+        if (heroTitleSection) {
+            if (key === 'home') {
+                heroTitleSection.classList.remove('hidden');
+                heroTitleSection.style.display = 'flex';
+            } else {
+                heroTitleSection.classList.add('hidden');
+                heroTitleSection.style.display = 'none';
+            }
+        }
+        
+        if (heroCircleSection) {
+            if (key === 'home') {
+                heroCircleSection.classList.remove('hidden');
+                heroCircleSection.style.display = 'flex';
+            } else {
+                heroCircleSection.classList.add('hidden');
+                heroCircleSection.style.display = 'none';
+            }
+        }
     }
 
     document.querySelectorAll('[data-nav]').forEach(btn => {
