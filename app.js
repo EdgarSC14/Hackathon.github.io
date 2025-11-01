@@ -126,7 +126,7 @@ document.addEventListener('mousemove', (e) => {
 // Configuración básica
 let userAddress = null;
 let isSubscribed = false;
-let currentNetworkKey = 'scrollSepolia';
+let currentNetworkKey = 'arbitrumSepolia';
 
 // Variable global para controlar el estado de la transacción
 let isUnsubscribing = false;
@@ -141,33 +141,8 @@ function getWeb3() {
     return new Web3(window.ethereum);
 }
 
-// Configuración de redes soportadas
-const NETWORKS = {
-    scrollSepolia: {
-        chainIdDec: 534351,
-        chainName: 'Scroll Sepolia',
-        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-        rpcUrls: ['https://sepolia-rpc.scroll.io'],
-        blockExplorerUrls: ['https://sepolia.scrollscan.com']
-    },
-    arbitrumSepolia: {
-        chainIdDec: 421614,
-        chainName: 'Arbitrum Sepolia',
-        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-        rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-        blockExplorerUrls: ['https://sepolia.arbiscan.io']
-    }
-};
-
-// Configuración de contratos por red (placeholders para demo)
-const CONTRACTS = {
-    scrollSepolia: {
-        membership: '0x0000000000000000000000000000000000000000'
-    },
-    arbitrumSepolia: {
-        membership: '0x0000000000000000000000000000000000000000'
-    }
-};
+// NETWORKS y CONTRACTS se importan de archivos externos
+// Ver networks.js y contracts-arbitrum.js
 
 function getSelectedNetworkKey() {
     const sel = document.getElementById('networkSelector');
@@ -246,7 +221,7 @@ async function checkAndSwitchNetwork(targetKey) {
 async function getContractCode() {
     try {
         console.log('Obteniendo código del contrato...');
-        const contractAddress = CONTRACTS[getSelectedNetworkKey()].membership;
+        const contractAddress = getContractAddress('membership', getSelectedNetworkKey());
         console.log('Dirección del contrato:', contractAddress);
         
         // Verificar que estamos en la red correcta
@@ -276,7 +251,7 @@ async function getContractCode() {
 
 // Configuración del contrato de membresía
 const MEMBERSHIP_CONTRACT = {
-    address: CONTRACTS[getSelectedNetworkKey()].membership,
+    address: getContractAddress('membership', getSelectedNetworkKey()),
     abi: [
         {
             "inputs": [],
@@ -367,7 +342,7 @@ async function updateNFTPrice() {
         }
 
         const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, CONTRACTS[getSelectedNetworkKey()].membership);
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, getContractAddress('membership', getSelectedNetworkKey()));
         
         // Obtener el precio del contrato
         const price = await contract.methods.PRICE().call();
@@ -382,125 +357,16 @@ async function updateNFTPrice() {
     }
 }
 
-// Función para verificar el contrato
+// Función para verificar el contrato (deshabilitada - no se usa membresía)
 async function verifyContract() {
-    try {
-        console.log('Iniciando verificación del contrato...');
-        const contractAddress = CONTRACTS[getSelectedNetworkKey()].membership;
-        console.log('Dirección del contrato:', contractAddress);
-        
-        const web3 = new Web3(window.ethereum);
-        console.log('Web3 inicializado');
-        
-        // Verificar la red
-        const chainId = await web3.eth.getChainId();
-        console.log('Chain ID actual:', chainId);
-        const target = getCurrentNetwork();
-        console.log('Chain ID esperado:', target.chainIdDec);
-        
-        if (chainId !== target.chainIdDec) {
-            throw new Error(`Red incorrecta. Por favor, cambia a ${target.chainName}`);
-        }
-        
-        // Verificar que el contrato existe
-        const code = await web3.eth.getCode(contractAddress);
-        console.log('Código del contrato:', code);
-        
-        if (!code || code === '0x') {
-            throw new Error('No se encontró código de contrato en la dirección especificada');
-        }
-        
-        // Crear instancia del contrato
-        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, contractAddress);
-        console.log('Instancia del contrato creada');
-        
-        // Verificar que podemos llamar a una función simple
-        try {
-            const price = await contract.methods.PRICE().call();
-            console.log('Precio de suscripción:', web3.utils.fromWei(price, 'ether'), getNativeSymbol());
-            return true;
-        } catch (priceError) {
-            console.error('Error al llamar a PRICE():', priceError);
-            throw new Error('No se pudo interactuar con el contrato. Verifica el ABI.');
-        }
-    } catch (error) {
-        console.error('Error detallado en verifyContract:', error);
-        if (error.message.includes('red incorrecta')) {
-            alert(error.message);
-        } else {
-            alert('Error al verificar el contrato: ' + error.message);
-        }
-        return false;
-    }
+    // Función deshabilitada: ya no usamos contratos de membresía
+    return true;
 }
 
-// Función para verificar la suscripción
+// Función para verificar la suscripción (deshabilitada - no se usa membresía)
 async function checkSubscription() {
-    if (!window.ethereum || !userAddress) return;
-
-    try {
-        console.log('Iniciando verificación de suscripción...');
-        await checkAndSwitchNetwork();
-        
-        const web3 = new Web3(window.ethereum);
-        console.log('Web3 inicializado para verificación de suscripción');
-        
-        // Verificar el contrato primero
-        console.log('Verificando contrato...');
-        const isContractValid = await verifyContract();
-        if (!isContractValid) {
-            throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
-        }
-        
-        console.log('Creando instancia del contrato...');
-        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, CONTRACTS[getSelectedNetworkKey()].membership);
-
-        // Intentar obtener el estado de suscripción
-        console.log('Verificando estado de suscripción...');
-        isSubscribed = await contract.methods.isSubscribed(userAddress).call();
-        console.log('Estado de suscripción:', isSubscribed);
-        
-        // Actualizar la UI
-        const notSubscribedInterface = document.getElementById('notSubscribedInterface');
-        const subscribedInterface = document.getElementById('subscribedInterface');
-        const subscribeButton = document.getElementById('subscribeButton');
-        const unsubscribeButton = document.getElementById('unsubscribeButton');
-        const dropdownSubscribeButton = document.getElementById('dropdownSubscribeButton');
-        const dropdownUnsubscribeButton = document.getElementById('dropdownUnsubscribeButton');
-        const nftImage = document.getElementById('nftImage');
-        
-        if (isSubscribed) {
-            if (notSubscribedInterface) notSubscribedInterface.classList.add('hidden');
-            if (subscribedInterface) subscribedInterface.classList.remove('hidden');
-            if (subscribeButton) subscribeButton.classList.add('hidden');
-            if (unsubscribeButton) unsubscribeButton.classList.remove('hidden');
-            if (dropdownSubscribeButton) dropdownSubscribeButton.classList.add('hidden');
-            if (dropdownUnsubscribeButton) dropdownUnsubscribeButton.classList.remove('hidden');
-            if (nftImage) nftImage.classList.remove('hidden');
-        } else {
-            if (notSubscribedInterface) notSubscribedInterface.classList.remove('hidden');
-            if (subscribedInterface) subscribedInterface.classList.add('hidden');
-            if (subscribeButton) subscribeButton.classList.remove('hidden');
-            if (unsubscribeButton) unsubscribeButton.classList.add('hidden');
-            if (dropdownSubscribeButton) dropdownSubscribeButton.classList.remove('hidden');
-            if (dropdownUnsubscribeButton) dropdownUnsubscribeButton.classList.add('hidden');
-            if (nftImage) nftImage.classList.add('hidden');
-        }
-        
-        // Actualizar el estado en el menú desplegable
-        if (elementExists('dropdownSubscriptionStatus')) {
-            const statusElement = document.getElementById('dropdownSubscriptionStatus');
-            statusElement.textContent = isSubscribed ? 'Activa' : 'Inactiva';
-            statusElement.classList.remove('text-green-500', 'text-red-500');
-            statusElement.classList.add(isSubscribed ? 'text-green-500' : 'text-red-500');
-        }
-        
-        return isSubscribed;
-    } catch (error) {
-        console.error('Error al verificar suscripción:', error);
-        alert('Error al verificar suscripción: ' + error.message);
-        return false;
-    }
+    // Función deshabilitada: ya no usamos sistema de membresías
+    return false;
 }
 
 // Función para suscribirse
@@ -525,7 +391,7 @@ async function subscribe() {
         }
         
         console.log('Creando instancia del contrato...');
-        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, CONTRACTS[getSelectedNetworkKey()].membership);
+        const contract = new web3.eth.Contract(MEMBERSHIP_CONTRACT.abi, getContractAddress('membership', getSelectedNetworkKey()));
 
         // Verificar si ya está suscrito
         console.log('Verificando estado de suscripción...');
@@ -629,7 +495,7 @@ async function unsubscribe() {
         }
 
         // Verificar el balance del contrato
-        const contractBalance = await web3.eth.getBalance(CONTRACTS[getSelectedNetworkKey()].membership);
+        const contractBalance = await web3.eth.getBalance(getContractAddress('membership', getSelectedNetworkKey()));
         console.log('Balance del contrato:', web3.utils.fromWei(contractBalance, 'ether'), getNativeSymbol());
         
         if (BigInt(contractBalance) < web3.utils.toWei('1', 'ether')) {
@@ -797,6 +663,11 @@ async function connectWallet() {
         await updateBalance();
         // No verificar suscripción: la UI de membresía fue removida
 
+        // Actualizar balance Stylus
+        if (typeof refreshStylusBalance === 'function') {
+            await refreshStylusBalance();
+        }
+
         // Actualizar el menú desplegable
         updateWalletDropdown();
 
@@ -854,6 +725,10 @@ window.addEventListener('load', async () => {
                 
                 await updateBalance();
                 // updateNFTPrice no es necesario: UI de membresía removida
+                // Actualizar balance Stylus
+                if (typeof refreshStylusBalance === 'function') {
+                    await refreshStylusBalance();
+                }
             }
         } catch (error) {
             console.error('Error al verificar conexión:', error);
@@ -1006,7 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Navegación de secciones
     function showSection(key) {
-        const ids = ['home','finanzas','creadores','scroll','arbitrum'];
+        const ids = ['home','finanzas','creadores','arbitrum','deploy'];
         ids.forEach(k => {
             const el = document.getElementById(`section-${k}`);
             if (el) {
@@ -1033,7 +908,11 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 await checkAndSwitchNetwork(currentNetworkKey);
                 await updateBalance();
-                await checkSubscription();
+                // checkSubscription eliminado: no usamos membresías
+                // Actualizar balance Stylus
+                if (typeof refreshStylusBalance === 'function') {
+                    await refreshStylusBalance();
+                }
             } catch (e) {
                 console.error(e);
             }
@@ -1045,16 +924,139 @@ document.addEventListener('DOMContentLoaded', function() {
     if (ctaPayQr) ctaPayQr.addEventListener('click', openPayQrModal);
     const ctaGenQr = document.getElementById('cta-generar-qr');
     if (ctaGenQr) ctaGenQr.addEventListener('click', openGenQrModal);
+    // Finanzas: handlers adicionales
+    const depositButton = document.getElementById('depositButton');
+    if (depositButton) {
+        depositButton.addEventListener('click', async () => {
+            const amount = document.getElementById('depositAmount').value;
+            if (!amount || amount <= 0) {
+                alert('Ingresa un monto válido');
+                return;
+            }
+            try {
+                if (typeof depositToPaymentsContract === 'function') {
+                    await depositToPaymentsContract(amount);
+                    await refreshStylusBalance();
+                    document.getElementById('depositAmount').value = '';
+                } else {
+                    alert('Función de depósito no disponible');
+                }
+            } catch (error) {
+                alert(`Error al depositar: ${error.message}`);
+            }
+        });
+    }
+
+    const withdrawButton = document.getElementById('withdrawButton');
+    if (withdrawButton) {
+        withdrawButton.addEventListener('click', () => {
+            const withdrawInput = document.getElementById('withdrawAmount');
+            withdrawInput.style.display = withdrawInput.style.display === 'none' ? 'block' : 'none';
+            if (withdrawInput.style.display !== 'none') {
+                withdrawInput.focus();
+            }
+        });
+    }
+
+    const withdrawAmount = document.getElementById('withdrawAmount');
+    if (withdrawAmount) {
+        withdrawAmount.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                const amount = withdrawAmount.value;
+                if (!amount || amount <= 0) {
+                    alert('Ingresa un monto válido');
+                    return;
+                }
+                try {
+                    if (typeof getStylusContract === 'function') {
+                        const web3i = getWeb3();
+                        const contract = getStylusContract('payments', getSelectedNetworkKey());
+                        const amountWei = web3i.utils.toWei(amount.toString(), 'ether');
+                        await contract.methods.withdraw(amountWei).send({ from: userAddress, gas: 300000 });
+                        alert('✅ Fondos retirados exitosamente');
+                        await refreshStylusBalance();
+                        withdrawAmount.value = '';
+                        withdrawAmount.style.display = 'none';
+                    } else {
+                        alert('Función de retiro no disponible');
+                    }
+                } catch (error) {
+                    alert(`Error al retirar: ${error.message}`);
+                }
+            }
+        });
+    }
+
+    const useStylusCheckbox = document.getElementById('useStylusPayment');
+    if (useStylusCheckbox) {
+        useStylusCheckbox.addEventListener('change', (e) => {
+            const methodText = document.getElementById('paymentMethod');
+            if (e.target.checked) {
+                methodText.textContent = 'Se usará el contrato Stylus';
+            } else {
+                methodText.textContent = 'Se usará transferencia nativa';
+            }
+        });
+    }
+
     const remesaBtn = document.getElementById('remesaSendBtn');
     if (remesaBtn) remesaBtn.addEventListener('click', async () => {
         const to = document.getElementById('remesaAddress').value.trim();
         const amount = document.getElementById('remesaAmount').value;
-        await sendNative(to, amount);
+        const useStylus = useStylusCheckbox ? useStylusCheckbox.checked : true;
+        await sendNative(to, amount, useStylus);
+        await refreshStylusBalance();
     });
+
+
+    // Definir refreshStylusBalance antes de usarla
+    window.refreshStylusBalance = async function() {
+        if (!userAddress) return;
+        try {
+            if (typeof getStylusBalance === 'function') {
+                const balance = await getStylusBalance(userAddress);
+                const balanceEl = document.getElementById('stylusBalance');
+                if (balanceEl) {
+                    balanceEl.textContent = `${parseFloat(balance).toFixed(4)} ETH`;
+                }
+            } else {
+                // Si no está disponible, mostrar 0
+                const balanceEl = document.getElementById('stylusBalance');
+                if (balanceEl) {
+                    balanceEl.textContent = '0.0000 ETH';
+                }
+            }
+        } catch (error) {
+            console.error('Error al obtener balance Stylus:', error);
+            const balanceEl = document.getElementById('stylusBalance');
+            if (balanceEl) {
+                balanceEl.textContent = '0.0000 ETH';
+            }
+        }
+    };
+
+    // Actualizar balance Stylus cuando se conecta la wallet
+    if (userAddress) {
+        refreshStylusBalance();
+    }
+
+    // Despliegue Stylus: handlers
+    const wasmFileInput = document.getElementById('wasmFileInput');
+    if (wasmFileInput) {
+        wasmFileInput.addEventListener('change', handleWasmFileSelect);
+    }
+    const deployButton = document.getElementById('deployButton');
+    if (deployButton) {
+        deployButton.addEventListener('click', deployStylusContract);
+    }
+    const deployQuickButton = document.getElementById('deployQuickButton');
+    if (deployQuickButton) {
+        deployQuickButton.addEventListener('click', deployQuickStylus);
+    }
 });
 
-// Enviar nativo con eth_sendTransaction
-async function sendNative(toAddress, amount) {
+// Enviar pago (intenta usar Stylus primero, sino usa nativo)
+async function sendNative(toAddress, amount, useStylus = true) {
     if (!window.ethereum || !userAddress) {
         alert('Conecta tu wallet');
         return;
@@ -1067,7 +1069,23 @@ async function sendNative(toAddress, amount) {
         alert('Monto inválido');
         return;
     }
+    
     await checkAndSwitchNetwork();
+    
+    // Intentar usar contrato Stylus si está disponible
+    if (useStylus && typeof sendPaymentStylus === 'function') {
+        try {
+            const tx = await sendPaymentStylus(toAddress, amount);
+            alert(`✅ Pago realizado con contrato Stylus!\nHash: ${tx.transactionHash}`);
+            await updateBalance();
+            return;
+        } catch (error) {
+            console.warn('Error con contrato Stylus, usando método nativo:', error);
+            // Continuar con método nativo si Stylus falla
+        }
+    }
+    
+    // Método nativo (transferencia directa)
     const web3i = new Web3(window.ethereum);
     const amountWei = web3i.utils.toWei(amount.toString(), 'ether');
     const txParams = {
@@ -1077,7 +1095,7 @@ async function sendNative(toAddress, amount) {
     };
     try {
         const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [txParams] });
-        alert(`Transacción enviada: ${txHash}`);
+        alert(`✅ Transacción enviada: ${txHash}`);
         await updateBalance();
     } catch (e) {
         alert(`Error al enviar: ${e.message}`);
@@ -1220,18 +1238,7 @@ async function invest(amount) {
         const web3 = new Web3(window.ethereum);
         console.log('Web3 inicializado para inversión');
         
-        // Verificar el contrato primero
-        console.log('Verificando contrato...');
-        const isContractValid = await verifyContract();
-        if (!isContractValid) {
-            throw new Error('No se pudo verificar el contrato. Por favor, contacta al soporte.');
-        }
-        
-        // Verificar la suscripción
-        const isSubscribed = await checkSubscription();
-        if (!isSubscribed) {
-            throw new Error('Necesitas estar suscrito para invertir.');
-        }
+        // Verificaciones de membresía eliminadas: ya no se requieren
         
         // Convertir el monto a wei (1 unidad nativa = 10^18 wei)
         const amountInWei = web3.utils.toWei(amount.toString(), 'ether');
@@ -1508,4 +1515,166 @@ document.addEventListener('DOMContentLoaded', function() {
             appendMessage('bot', `Ocurrió un error al consultar la IA: ${err.message}`);
         }
     });
+
+    // ========== FUNCIONES DE DESPLIEGUE STYLUS ==========
+    let wasmFileData = null;
+
+    // Manejar selección de archivo WASM
+    function handleWasmFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!file.name.endsWith('.wasm')) {
+            alert('Por favor, selecciona un archivo .wasm');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            wasmFileData = e.target.result;
+            const fileSize = (file.size / 1024).toFixed(2);
+            document.getElementById('wasmSize').textContent = `${fileSize} KB`;
+            document.getElementById('wasmInfo').classList.remove('hidden');
+            document.getElementById('deployButton').disabled = false;
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Desplegar contrato Stylus usando archivo cargado
+    async function deployStylusContract() {
+        if (!wasmFileData) {
+            alert('Por favor, carga primero el archivo WASM');
+            return;
+        }
+
+        if (!window.ethereum || !userAddress) {
+            alert('Por favor, conecta tu wallet primero');
+            return;
+        }
+
+        await checkAndSwitchNetwork();
+        await deployWasmToStylus(wasmFileData);
+    }
+
+    // Desplegar contrato precompilado de pagos
+    async function deployQuickStylus() {
+        if (!window.ethereum || !userAddress) {
+            alert('Por favor, conecta tu wallet primero');
+            return;
+        }
+
+        try {
+            // Intentar cargar el WASM precompilado
+            const response = await fetch('payments-contract.wasm');
+            if (!response.ok) {
+                throw new Error('No se pudo cargar el archivo WASM. Asegúrate de que payments-contract.wasm esté disponible.');
+            }
+            const wasmArrayBuffer = await response.arrayBuffer();
+            wasmFileData = wasmArrayBuffer;
+            
+            document.getElementById('wasmSize').textContent = `${(wasmArrayBuffer.byteLength / 1024).toFixed(2)} KB`;
+            document.getElementById('wasmInfo').classList.remove('hidden');
+            
+            await checkAndSwitchNetwork();
+            await deployWasmToStylus(wasmArrayBuffer);
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+            console.error('Error al cargar WASM precompilado:', error);
+        }
+    }
+
+    // Desplegar WASM a Stylus usando el Deployer Contract
+    async function deployWasmToStylus(wasmArrayBuffer) {
+        const web3i = getWeb3();
+        const deployStatus = document.getElementById('deployStatus');
+        const deployResult = document.getElementById('deployResult');
+        
+        deployStatus.classList.remove('hidden');
+        deployResult.classList.add('hidden');
+        
+        try {
+            // Stylus Deployer Contract ABI (simplificado)
+            const DEPLOYER_ABI = [
+                {
+                    "inputs": [
+                        {"internalType": "bytes32", "name": "salt", "type": "bytes32"},
+                        {"internalType": "bytes", "name": "initcode", "type": "bytes"}
+                    ],
+                    "name": "deploy",
+                    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {"internalType": "address", "name": "program", "type": "address"}
+                    ],
+                    "name": "activate",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                }
+            ];
+
+            const DEPLOYER_ADDRESS = '0xcEcba2F1DC234f70Dd89F2041029807F8D03A990';
+            const deployer = new web3i.eth.Contract(DEPLOYER_ABI, DEPLOYER_ADDRESS);
+
+            // Paso 1: Preparar datos
+            document.getElementById('deployStep1').innerHTML = '✅ Paso 1: Preparando despliegue...';
+            document.getElementById('deployStatusText').textContent = 'Preparando despliegue...';
+            
+            // Convertir WASM a hex y crear initcode
+            const wasmHex = '0x' + Array.from(new Uint8Array(wasmArrayBuffer))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+            
+            // Salt aleatorio para el despliegue
+            const salt = web3i.utils.randomHex(32);
+
+            // Paso 2: Desplegar
+            document.getElementById('deployStep2').innerHTML = '⏳ Paso 2: Enviando transacción de despliegue...';
+            document.getElementById('deployStatusText').textContent = 'Desplegando contrato...';
+            
+            // Nota: Para un despliegue real, necesitarías construir el initcode correctamente
+            // Esto es un ejemplo simplificado - el despliegue real requiere más pasos
+            
+            alert('⚠️ Despliegue desde navegador aún en desarrollo.\n\n' +
+                  'Para desplegar ahora, usa el comando CLI:\n\n' +
+                  'cd payments-contract\n' +
+                  'cargo stylus deploy --private-key YOUR_KEY --endpoint https://sepolia-rollup.arbitrum.io/rpc\n\n' +
+                  'O espera a que completemos la integración del deployer contract en el navegador.');
+
+            // TODO: Implementar despliegue completo usando el deployer contract
+            // Esto requiere construir el initcode correctamente con el WASM y metadata
+            
+        } catch (error) {
+            console.error('Error en despliegue:', error);
+            alert(`Error al desplegar: ${error.message}`);
+        } finally {
+            deployStatus.classList.add('hidden');
+        }
+    }
+
+    // Copiar dirección desplegada
+    window.copyAddress = function() {
+        const address = document.getElementById('deployedAddress').textContent;
+        navigator.clipboard.writeText(address).then(() => {
+            alert('Dirección copiada al portapapeles');
+        });
+    };
+
+    // Actualizar contracts-arbitrum.js automáticamente
+    window.updateContractsFile = async function() {
+        const address = document.getElementById('deployedAddress').textContent;
+        const networkKey = getSelectedNetworkKey();
+        
+        alert(`Por favor, actualiza manualmente contracts-arbitrum.js:\n\n` +
+              `${networkKey}: {\n` +
+              `    payments: '${address}',\n` +
+              `    ...\n` +
+              `}`);
+        
+        // Nota: Por seguridad, no podemos modificar archivos del servidor desde el navegador
+        // El usuario debe actualizar manualmente
+    };
 })();

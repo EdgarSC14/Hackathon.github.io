@@ -21,15 +21,15 @@
                     <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="home">Inicio</button>
                     <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="finanzas">Finanzas Inclusivas</button>
                     <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="creadores">Creadores</button>
-                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="scroll">DeFi en Scroll</button>
                     <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="arbitrum">Innovación en Arbitrum</button>
+                    <button class="px-3 py-1 rounded hover:bg-gray-700" data-nav="deploy">Desplegar Stylus</button>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
                 <div class="hidden md:block">
                     <select id="networkSelector" class="bg-gray-700 text-sm px-3 py-2 rounded">
-                        <option value="scrollSepolia">Scroll Sepolia</option>
                         <option value="arbitrumSepolia">Arbitrum Sepolia</option>
+                        <option value="arbitrumOne">Arbitrum One</option>
                     </select>
                 </div>
                 <div id="balanceContainer" class="hidden">
@@ -80,8 +80,8 @@
             <button class="bg-gray-800 px-3 py-2 rounded" data-nav="home">Inicio</button>
             <button class="bg-gray-800 px-3 py-2 rounded" data-nav="finanzas">Finanzas Inclusivas</button>
             <button class="bg-gray-800 px-3 py-2 rounded" data-nav="creadores">Creadores</button>
-            <button class="bg-gray-800 px-3 py-2 rounded" data-nav="scroll">DeFi en Scroll</button>
-            <button class="bg-gray-800 px-3 py-2 rounded col-span-2" data-nav="arbitrum">Innovación en Arbitrum</button>
+            <button class="bg-gray-800 px-3 py-2 rounded" data-nav="arbitrum">Innovación en Arbitrum</button>
+            <button class="bg-gray-800 px-3 py-2 rounded col-span-2" data-nav="deploy">Desplegar Stylus</button>
         </div>
         <!-- Bloque de bienvenida y stats eliminado -->
         
@@ -89,10 +89,10 @@
         <section id="section-home" class="mt-8">
             <h2 class="text-3xl font-bold mb-4">Explora las categorías</h2>
             <p class="text-gray-300 mb-6">Selecciona una categoría para ver funcionalidades y comenzar.</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-gray-800 p-4 rounded-lg">
                     <h3 class="text-xl font-bold">Finanzas y Sistemas de Pago para la Inclusión</h3>
-                    <p class="text-gray-400 mt-2">Ahorro, pagos por QR, remesas y microcréditos.</p>
+                    <p class="text-gray-400 mt-2">Ahorro, pagos por QR, remesas y microcréditos en Arbitrum.</p>
                     <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="finanzas">Ver más</button>
                 </div>
                 <div class="bg-gray-800 p-4 rounded-lg">
@@ -101,13 +101,8 @@
                     <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="creadores">Ver más</button>
                 </div>
                 <div class="bg-gray-800 p-4 rounded-lg">
-                    <h3 class="text-xl font-bold">DeFi y Pagos en Scroll</h3>
-                    <p class="text-gray-400 mt-2">Pagos rápidos y productos DeFi en zkEVM.</p>
-                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="scroll">Ver más</button>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg">
                     <h3 class="text-xl font-bold">Innovación en Arbitrum</h3>
-                    <p class="text-gray-400 mt-2">Experiencias avanzadas, DeFi, identidad e integraciones.</p>
+                    <p class="text-gray-400 mt-2">One, Stylus, Orbit: velocidad, bajo costo y seguridad de Ethereum.</p>
                     <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded" data-nav="arbitrum">Ver más</button>
                 </div>
             </div>
@@ -133,11 +128,11 @@
                 </div>
 
                 <div class="bg-gray-800 p-6 rounded-lg">
-                    <div class="text-purple-500 text-4xl mb-4">⚙️</div>
-                    <h3 class="text-xl font-bold mb-2">DeFi en L2</h3>
-                    <p class="text-gray-300">Pagos y productos DeFi en Scroll y Arbitrum.</p>
-                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300" data-nav="scroll">
-                        Ir a DeFi
+                    <div class="text-purple-500 text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold mb-2">Arbitrum L2</h3>
+                    <p class="text-gray-300">Pagos y productos DeFi rápidos y económicos en Arbitrum.</p>
+                    <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-300" data-nav="arbitrum">
+                        Ir a Arbitrum
                     </button>
                 </div>
             </div>
@@ -162,8 +157,13 @@
         </section>
 
         <section id="section-finanzas" class="mt-12 hidden">
-            <h2 class="text-3xl font-bold mb-4">Finanzas y Sistemas de Pago para la Inclusión</h2>
-            <p class="text-gray-300 mb-6">Ampliar el acceso a herramientas financieras justas y transparentes.</p>
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="text-3xl font-bold">Finanzas y Sistemas de Pago para la Inclusión</h2>
+                <span class="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                    <i class="fas fa-code"></i> Powered by Stylus (Rust)
+                </span>
+            </div>
+            <p class="text-gray-300 mb-6">Ampliar el acceso a herramientas financieras justas y transparentes. Nuestros contratos están escritos en Rust usando Arbitrum Stylus para máximo rendimiento y seguridad.</p>
             <ul class="list-disc list-inside text-gray-400 mb-6">
                 <li>Sistemas de pago con QR/NFC/WhatsApp</li>
                 <li>Préstamos y microcréditos comunitarios</li>
@@ -175,15 +175,68 @@
                 <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-remesa">Enviar remesa</button>
             </div>
 
+            <!-- Balance del Contrato Stylus -->
+            <div class="mt-8 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg p-6 border border-purple-500/30">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-wallet text-purple-400"></i>
+                    Balance en Contrato Stylus
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-gray-800/50 rounded p-4">
+                        <div class="text-sm text-gray-400">Balance Depositado</div>
+                        <div id="stylusBalance" class="text-2xl font-bold text-purple-400">0.0000 ETH</div>
+                    </div>
+                    <div class="bg-gray-800/50 rounded p-4">
+                        <div class="text-sm text-gray-400">Estado</div>
+                        <div id="stylusStatus" class="text-lg font-bold text-green-400">✓ Conectado</div>
+                    </div>
+                    <div class="bg-gray-800/50 rounded p-4">
+                        <button onclick="refreshStylusBalance()" class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-sm">
+                            <i class="fas fa-sync-alt mr-2"></i>Actualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Deposita fondos primero para usar pagos con el contrato Stylus. Los pagos se realizarán desde tu balance depositado.
+                </div>
+            </div>
+
+            <!-- Depositar en Contrato Stylus -->
+            <div class="mt-6 bg-gray-800/80 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">💳 Depositar en Contrato Stylus</h3>
+                <p class="text-gray-400 mb-4 text-sm">Deposita ETH en el contrato Stylus para poder realizar pagos usando el contrato inteligente.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input id="depositAmount" type="number" step="0.0001" min="0.0001" class="bg-gray-700 text-white px-4 py-2 rounded" placeholder="Monto a depositar (ETH)">
+                    <button id="depositButton" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                        <i class="fas fa-arrow-down mr-2"></i>Depositar
+                    </button>
+                    <button id="withdrawButton" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                        <i class="fas fa-arrow-up mr-2"></i>Retirar
+                    </button>
+                </div>
+                <input id="withdrawAmount" type="number" step="0.0001" min="0.0001" class="mt-2 bg-gray-700 text-white px-4 py-2 rounded w-full md:w-auto" placeholder="Monto a retirar (ETH)" style="display: none;">
+            </div>
+
             <!-- Remesas Form -->
             <div class="mt-8 bg-gray-800/80 rounded-lg p-6">
                 <h3 class="text-2xl font-bold mb-4">Enviar Remesa</h3>
+                <div class="mb-4 p-3 bg-purple-600/20 rounded border border-purple-500/30">
+                    <div class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" id="useStylusPayment" checked class="rounded">
+                        <label for="useStylusPayment" class="text-gray-300">
+                            <strong>Usar Contrato Stylus</strong> (pagos desde balance depositado - más seguro y eficiente)
+                        </label>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <input id="remesaAddress" class="bg-gray-700 text-white px-4 py-2 rounded" placeholder="Dirección destino 0x...">
                     <input id="remesaAmount" type="number" step="0.0001" min="0" class="bg-gray-700 text-white px-4 py-2 rounded" placeholder="Monto">
                     <button id="remesaSendBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">Enviar</button>
                 </div>
-                <p class="text-sm text-gray-400 mt-2">Se enviará el token nativo de la red seleccionada.</p>
+                <p class="text-sm text-gray-400 mt-2">
+                    <span id="paymentMethod">Se usará el contrato Stylus</span> si tienes balance suficiente, sino se usará transferencia nativa.
+                </p>
             </div>
         </section>
 
@@ -202,28 +255,244 @@
             </div>
         </section>
 
-        <section id="section-scroll" class="mt-12 hidden">
-            <h2 class="text-3xl font-bold mb-4">DeFi y Sistemas de Pago en Scroll</h2>
-            <p class="text-gray-300 mb-6">Aprovecha la velocidad, seguridad y costos bajos de Scroll zkEVM.</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-pagar-scroll">Pagar en Scroll</button>
-                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-defi-scroll">Usar DeFi (vault)</button>
-                <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-liquidez-scroll">Proveer liquidez</button>
-            </div>
-        </section>
-
         <section id="section-arbitrum" class="mt-12 hidden">
-            <h2 class="text-3xl font-bold mb-4">Innovación en Arbitrum</h2>
-            <p class="text-gray-300 mb-6">Construye apps Web3 eficientes y accesibles en L2.</p>
-            <ul class="list-disc list-inside text-gray-400 mb-6">
-                <li>Soluciones DeFi y herramientas de identidad</li>
-                <li>Integraciones cross-chain</li>
-                <li>Experiencias de usuario avanzadas</li>
-            </ul>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <h2 class="text-3xl font-bold mb-6">Introducción a Arbitrum</h2>
+            <p class="text-xl text-gray-300 mb-8">En un mundo donde las blockchains enfrentan el trilema de escalabilidad, <strong class="text-purple-400">Arbitrum ofrece la velocidad y bajo costo que necesitamos</strong>.</p>
+            
+            <div class="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-lg p-6 mb-8">
+                <p class="text-lg text-gray-200 mb-4"><strong>Arbitrum es la solución de Capa 2 (Layer 2) líder para escalar Ethereum.</strong></p>
+                <p class="text-gray-300">Une a desarrolladores, usuarios y aplicaciones en un ecosistema poderoso para transacciones rápidas, económicas y seguras.</p>
+                <p class="text-gray-300 mt-4">Con Arbitrum, puedes construir cualquier tipo de aplicación descentralizada —DeFi, NFTs, gaming, DAOs— cualquier servicio que necesites para escalar sin comprometer la seguridad de Ethereum.</p>
+            </div>
+
+            <!-- Arbitrum One -->
+            <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 mb-6">
+                <h3 class="text-2xl font-bold mb-4 text-purple-400">⚡ Arbitrum One: Rollup Optimista (Optimistic Rollup)</h3>
+                <p class="text-gray-300 mb-4">Es la cadena principal de Arbitrum que procesa transacciones fuera de Ethereum (off-chain) pero hereda la seguridad de Ethereum (on-chain).</p>
+                <p class="text-gray-300 mb-4">Funciona bajo el concepto de "optimismo": asume que todas las transacciones son válidas a menos que alguien pruebe lo contrario durante el período de desafío (7 días).</p>
+                <div class="bg-gray-700/50 rounded p-4">
+                    <p class="text-gray-200"><strong>Ventajas:</strong></p>
+                    <ul class="list-disc list-inside text-gray-300 mt-2 space-y-1">
+                        <li>Puedes ejecutar contratos inteligentes exactamente igual que en Ethereum</li>
+                        <li>Tarifas hasta <strong class="text-green-400">90% más bajas</strong></li>
+                        <li>Velocidad hasta <strong class="text-green-400">10x mayor</strong></li>
+                        <li>Mantiene la seguridad y descentralización de Ethereum</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Arbitrum Stylus -->
+            <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 mb-6">
+                <h3 class="text-2xl font-bold mb-4 text-purple-400">🚀 Arbitrum Stylus: La Siguiente Generación de Smart Contracts</h3>
+                <p class="text-gray-300 mb-4">Una tecnología revolucionaria que permite escribir contratos inteligentes en múltiples lenguajes de programación como <strong>Rust, C, C++</strong>, además de Solidity.</p>
+                <p class="text-gray-300 mb-4">Ofrece hasta <strong class="text-green-400">10x mejor rendimiento</strong> comparado con contratos en Solidity, gracias a la compilación a WebAssembly (WASM).</p>
+                <div class="bg-gray-700/50 rounded p-4">
+                    <p class="text-gray-200"><strong>Ejemplos de ventajas con Stylus:</strong></p>
+                    <ul class="list-disc list-inside text-gray-300 mt-2 space-y-1">
+                        <li><strong>Contratos en Rust:</strong> Mayor seguridad, mejor rendimiento</li>
+                        <li><strong>Interoperabilidad total:</strong> Los contratos en diferentes lenguajes pueden comunicarse entre sí</li>
+                        <li><strong>Costos reducidos:</strong> Gas más eficiente gracias a optimizaciones de WASM</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Arbitrum Orbit -->
+            <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 mb-6">
+                <h3 class="text-2xl font-bold mb-4 text-purple-400">🌐 Arbitrum Orbit: Crea Tu Propia Blockchain L3</h3>
+                <p class="text-gray-300 mb-4">Una plataforma que permite a cualquier proyecto crear su propia cadena (Layer 3) sobre Arbitrum.</p>
+                <p class="text-gray-300 mb-4">Puedes personalizar gas tokens, privacidad, permisos y más, mientras aprovechas la infraestructura de Arbitrum.</p>
+                <p class="text-gray-300"><strong>Ideal para:</strong> empresas, DAOs y proyectos que necesitan su propia blockchain sin construir todo desde cero.</p>
+            </div>
+
+            <!-- Resumen -->
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 mb-6">
+                <p class="text-xl text-white mb-4"><strong>La seguridad de Ethereum, pero con la velocidad y costos de una blockchain moderna.</strong></p>
+                <p class="text-white/90">Puedes construir cualquier aplicación descentralizada en el lenguaje de programación que desees (con Stylus), y hacerlo escalable sin sacrificar la seguridad de Ethereum.</p>
+            </div>
+
+            <!-- ¿Por qué Arbitrum? -->
+            <div class="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6">
+                <h3 class="text-2xl font-bold mb-4">✅ ¿Por qué Arbitrum?</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                        <div>
+                            <strong class="text-gray-200">Compatible con Ethereum:</strong>
+                            <p class="text-gray-400">Misma EVM, mismo código Solidity</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                        <div>
+                            <strong class="text-gray-200">Ultra rápido:</strong>
+                            <p class="text-gray-400">Confirmaciones en segundos</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                        <div>
+                            <strong class="text-gray-200">Costos bajos:</strong>
+                            <p class="text-gray-400">Hasta 95% más barato que Ethereum</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                        <div>
+                            <strong class="text-gray-200">Seguro:</strong>
+                            <p class="text-gray-400">Hereda la seguridad de Ethereum</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                        <div>
+                            <strong class="text-gray-200">Ecosistema robusto:</strong>
+                            <p class="text-gray-400">Miles de aplicaciones y desarrolladores</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                        <div>
+                            <strong class="text-gray-200">Innovación continua:</strong>
+                            <p class="text-gray-400">Stylus, Orbit y más tecnologías emergentes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTAs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
                 <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-pagar-arbitrum">Pagar en Arbitrum</button>
                 <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-defi-arbitrum">Probar DeFi</button>
                 <button class="bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded" id="cta-crosschain">Cross-chain demo</button>
+            </div>
+        </section>
+
+        <!-- Sección Desplegar Stylus -->
+        <section id="section-deploy" class="mt-12 hidden">
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="text-3xl font-bold">Desplegar Contrato Stylus</h2>
+                <span class="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                    <i class="fas fa-rocket"></i> Developer Tools
+                </span>
+            </div>
+            <p class="text-gray-300 mb-6">Despliega tu contrato inteligente escrito en Rust directamente desde el navegador usando MetaMask.</p>
+
+            <div class="bg-gray-800/80 rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">📋 Requisitos</h3>
+                <ul class="list-disc list-inside text-gray-300 space-y-2 mb-4">
+                    <li>MetaMask instalado y conectado</li>
+                    <li>Red configurada: Arbitrum Sepolia o Arbitrum One</li>
+                    <li>ETH suficiente para gas (recomendado: 0.01+ ETH)</li>
+                    <li>Archivo WASM compilado del contrato</li>
+                </ul>
+            </div>
+
+            <div class="bg-gray-800/80 rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">🚀 Desplegar Contrato</h3>
+                
+                <div class="space-y-4">
+                    <!-- Cargar archivo WASM -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Cargar archivo WASM del contrato
+                        </label>
+                        <input type="file" id="wasmFileInput" accept=".wasm" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700">
+                        <p class="text-xs text-gray-500 mt-1">Archivo: payments-contract.wasm o tu contrato compilado</p>
+                    </div>
+
+                    <!-- Información del archivo -->
+                    <div id="wasmInfo" class="hidden bg-gray-700/50 rounded p-4">
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-400">Tamaño:</span>
+                                <span id="wasmSize" class="ml-2 font-mono text-purple-400"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Estado:</span>
+                                <span id="wasmStatus" class="ml-2 text-green-400">✓ Listo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón de despliegue -->
+                    <div class="flex items-center gap-4">
+                        <button id="deployButton" class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-rocket mr-2"></i>Desplegar Contrato
+                        </button>
+                        <button id="deployQuickButton" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold">
+                            <i class="fas fa-bolt mr-2"></i>Desplegar Payments Contract (Precompilado)
+                        </button>
+                    </div>
+
+                    <!-- Estado del despliegue -->
+                    <div id="deployStatus" class="hidden bg-gray-700/50 rounded p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-spinner fa-spin text-purple-400"></i>
+                            <span class="font-bold" id="deployStatusText">Desplegando...</span>
+                        </div>
+                        <div class="text-sm text-gray-300 space-y-1">
+                            <div id="deployStep1" class="text-gray-500">⏳ Paso 1: Preparando despliegue...</div>
+                            <div id="deployStep2" class="text-gray-500">⏳ Paso 2: Enviando transacción de despliegue...</div>
+                            <div id="deployStep3" class="text-gray-500">⏳ Paso 3: Activando contrato...</div>
+                        </div>
+                    </div>
+
+                    <!-- Resultado del despliegue -->
+                    <div id="deployResult" class="hidden bg-gradient-to-r from-green-600/20 to-blue-600/20 rounded-lg p-6 border border-green-500/30">
+                        <h4 class="text-xl font-bold mb-4 text-green-400">
+                            <i class="fas fa-check-circle mr-2"></i>¡Contrato desplegado exitosamente!
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <span class="text-gray-400">Dirección del contrato:</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <code id="deployedAddress" class="bg-gray-900 px-3 py-2 rounded font-mono text-purple-400"></code>
+                                    <button onclick="copyAddress()" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm">
+                                        <i class="fas fa-copy mr-1"></i>Copiar
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Hash de transacción:</span>
+                                <div class="mt-1">
+                                    <a id="deployTxHash" href="#" target="_blank" class="text-purple-400 hover:text-purple-300 underline"></a>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-yellow-600/20 rounded border border-yellow-500/30">
+                                <p class="text-sm text-yellow-300">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    <strong>Importante:</strong> Copia esta dirección y actualízala en <code class="bg-gray-900 px-2 py-1 rounded">contracts-arbitrum.js</code>
+                                </p>
+                            </div>
+                            <button onclick="updateContractsFile()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                                <i class="fas fa-save mr-2"></i>Actualizar contracts-arbitrum.js automáticamente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="bg-gray-800/80 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">ℹ️ Información</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+                    <div>
+                        <strong class="text-purple-400">Ubicación del WASM:</strong>
+                        <p class="mt-1">payments-contract/target/wasm32-unknown-unknown/release/stylus_hello_world.wasm</p>
+                    </div>
+                    <div>
+                        <strong class="text-purple-400">Deployer Contract:</strong>
+                        <p class="mt-1 font-mono">0xcEcba2F1DC234f70Dd89F2041029807F8D03A990</p>
+                    </div>
+                    <div>
+                        <strong class="text-purple-400">Costo estimado:</strong>
+                        <p class="mt-1">~0.001 - 0.01 ETH (depende del tamaño)</p>
+                    </div>
+                    <div>
+                        <strong class="text-purple-400">Tiempo estimado:</strong>
+                        <p class="mt-1">2-5 minutos (2 transacciones)</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -234,7 +503,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                     <h3 class="text-xl font-bold text-purple-500 mb-4">Impulso Web3</h3>
-                    <p class="text-gray-400">Pagos inclusivos, economía de creadores y DeFi en L2</p>
+                    <p class="text-gray-400">Pagos inclusivos, economía de creadores y DeFi en Arbitrum</p>
                 </div>
                 <div>
                     <h3 class="text-xl font-bold text-purple-500 mb-4">Enlaces Rápidos</h3>
@@ -372,6 +641,10 @@
     <!-- QR libs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+    <!-- Configuración de redes y contratos -->
+    <script src="networks.js"></script>
+    <script src="contracts-arbitrum.js"></script>
+    <script src="stylus-contracts.js"></script>
     <script src="app.js"></script>
     <script>
         // Función para mostrar el modal de membresía
