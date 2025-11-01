@@ -59,3 +59,6 @@ Si el faucet dice que ya obtuviste fondos pero el balance sigue en 0:
 - Espera 1-2 minutos para que se confirme la transacción
 - Verifica en Arbiscan que la transacción fue exitosa
 - Asegúrate de estar viendo Arbitrum Sepolia, no Ethereum Sepolia
+
+
+

@@ -21,3 +21,6 @@ else
     echo "❌ Error en la verificación. Revisa los errores arriba."
     exit 1
 fi
+
+
+

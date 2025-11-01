@@ -761,6 +761,7 @@ nav.morpho-nav .nav-links .morpho-nav-button:nth-child(6) {
     z-index: 1000;
     max-height: 0;
     overflow-y: auto;
+    pointer-events: none;
 }
 
 .morpho-custom-select-options.show {
@@ -768,6 +769,7 @@ nav.morpho-nav .nav-links .morpho-nav-button:nth-child(6) {
     visibility: visible;
     transform: translateY(0) scale(1);
     max-height: 400px;
+    pointer-events: auto;
 }
 
 .morpho-custom-option {
@@ -1000,11 +1002,21 @@ nav.morpho-nav .nav-actions {
 
 /* Dropdown estilo Morpho */
 #walletDropdown.morpho-dropdown {
-    background-color: var(--background-color-primary);
+    background-color: rgba(15, 15, 15, 0.98);
+    backdrop-filter: blur(20px) saturate(180%);
     border: 0.5px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(139, 92, 246, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.36, 0.2, 0.07, 1);
+}
+
+#walletDropdown.morpho-dropdown:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
 }
 
 #walletDropdown.morpho-dropdown .morpho-dropdown-item {

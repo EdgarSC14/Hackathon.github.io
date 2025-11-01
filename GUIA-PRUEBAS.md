@@ -174,3 +174,6 @@ Una vez que confirmes que el contrato funciona correctamente:
 2. Prueba desde la aplicación principal (Impulso Web3)
 3. Integra con otros módulos (microcréditos, ahorros, etc.)
 4. Considera desplegar en Arbitrum One para producción
+
+
+

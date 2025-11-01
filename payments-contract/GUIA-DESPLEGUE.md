@@ -78,3 +78,6 @@ Una vez desplegado:
 1. Prueba `deposit()` desde MetaMask
 2. Prueba `sendPayment()` entre direcciones
 3. Verifica balances con `getBalance()`
+
+
+

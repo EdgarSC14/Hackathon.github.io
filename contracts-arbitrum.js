@@ -10,8 +10,14 @@ const CONTRACTS_ARBITRUM = {
         microcredit: '0x2345678901234567890123456789012345678901', // Contrato Stylus de microcréditos (ejemplo)
         savings: '0x3456789012345678901234567890123456789012', // Contrato Stylus de ahorros (ejemplo)
         creators: '0x4567890123456789012345678901234567890123', // Contrato Stylus de creadores (ejemplo)
-        royalties: '0x5678901234567890123456789012345678901234' // Contrato Stylus de regalías (ejemplo)
+        royalties: '0x5678901234567890123456789012345678901234', // Contrato Stylus de regalías (ejemplo)
+        // Nuevos contratos para comunidad de creativos
+        community: '0x0000000000000000000000000000000000000000', // Contrato de Comunidad (suscripciones)
+        loans: '0x0000000000000000000000000000000000000000', // Contrato de Préstamos
+        creditBureau: '0x0000000000000000000000000000000000000000' // Contrato de Buró de Crédito
     },
+
+    
     arbitrumOne: {
         // Contratos Stylus (Rust) en Arbitrum One Mainnet
         // NOTA: Estas son direcciones de ejemplo. Reemplazar con contratos reales desplegados
@@ -20,7 +26,11 @@ const CONTRACTS_ARBITRUM = {
         microcredit: '0x7890123456789012345678901234567890123456', // Contrato Stylus de microcréditos (ejemplo)
         savings: '0x8901234567890123456789012345678901234567', // Contrato Stylus de ahorros (ejemplo)
         creators: '0x9012345678901234567890123456789012345678', // Contrato Stylus de creadores (ejemplo)
-        royalties: '0xA012345678901234567890123456789012345678' // Contrato Stylus de regalías (ejemplo)
+        royalties: '0xA012345678901234567890123456789012345678', // Contrato Stylus de regalías (ejemplo)
+        // Nuevos contratos para comunidad de creativos
+        community: '0x0000000000000000000000000000000000000000', // Contrato de Comunidad (suscripciones)
+        loans: '0x0000000000000000000000000000000000000000', // Contrato de Préstamos
+        creditBureau: '0x0000000000000000000000000000000000000000' // Contrato de Buró de Crédito
     }
 };
 

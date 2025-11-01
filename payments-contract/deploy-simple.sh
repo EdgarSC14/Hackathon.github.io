@@ -29,3 +29,6 @@ cargo stylus deploy \
 echo ""
 echo "✅ Despliegue completado!"
 echo "📝 Copia la dirección del contrato y actualiza contracts-arbitrum.js"
+
+
+

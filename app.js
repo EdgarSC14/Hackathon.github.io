@@ -816,21 +816,41 @@ window.ethereum.on('accountsChanged', async (accounts) => {
             if (elementExists('walletText')) document.getElementById('walletText').textContent = 'Conectar Wallet';
             if (elementExists('connectWallet')) document.getElementById('connectWallet').classList.remove('connected');
             if (elementExists('balanceContainer')) document.getElementById('balanceContainer').classList.add('hidden');
+            // Cerrar dropdown si está abierto
+            const dropdown = document.getElementById('walletDropdown');
+            if (dropdown) dropdown.classList.add('hidden');
     } else {
         userAddress = accounts[0];
             if (elementExists('walletText')) document.getElementById('walletText').textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
         await updateBalance();
+        await updateWalletDropdown();
+        
+        // Actualizar estadísticas de comunidad si está disponible
+        if (typeof checkMembershipStatus === 'function') {
+            await checkMembershipStatus();
+        }
+        if (typeof checkCreditStats === 'function') {
+            await checkCreditStats();
+        }
     }
 });
 }
 
-// Evento de clic en el botón de desconectar
+// Evento de clic en el botón de desconectar y cambiar cuenta
 document.addEventListener('DOMContentLoaded', function() {
     const disconnectButton = document.getElementById('disconnectWallet');
     if (disconnectButton) {
         disconnectButton.addEventListener('click', function() {
             console.log('Botón de desconectar clickeado');
             disconnectWallet();
+        });
+    }
+
+    const changeAccountBtn = document.getElementById('changeAccountBtn');
+    if (changeAccountBtn) {
+        changeAccountBtn.addEventListener('click', function() {
+            console.log('Botón de cambiar cuenta clickeado');
+            changeAccount();
         });
     }
 });
@@ -891,6 +911,11 @@ function disconnectWallet() {
 if (typeof window !== 'undefined' && window.ethereum && window.ethereum.on) {
 window.ethereum.on('chainChanged', async () => {
         await updateBalance();
+        await updateWalletDropdown();
+        // Actualizar balance Stylus
+        if (typeof refreshStylusBalance === 'function') {
+            await refreshStylusBalance();
+        }
 });
 }
 
@@ -899,8 +924,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const connectWalletButton = document.getElementById('connectWallet');
     if (connectWalletButton) {
         connectWalletButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            // Cerrar dropdown de redes si está abierto
+            const customSelectOptions = document.querySelector('.morpho-custom-select-options');
+            const customSelectTrigger = document.querySelector('.morpho-custom-select-trigger');
+            if (customSelectOptions && customSelectTrigger) {
+                customSelectOptions.classList.remove('show');
+                customSelectTrigger.classList.remove('active');
+            }
+            
             if (userAddress) {
-                e.stopPropagation();
                 toggleWalletDropdown();
             } else {
                 connectWallet();
@@ -910,13 +945,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Cerrar el menú al hacer clic fuera
     document.addEventListener('click', function(e) {
+        // Cerrar dropdown de wallet
         const dropdown = document.getElementById('walletDropdown');
         const walletButton = document.getElementById('connectWallet');
         
         if (dropdown && walletButton && !dropdown.contains(e.target) && !walletButton.contains(e.target)) {
             dropdown.classList.add('hidden');
         }
+        
+        // Cerrar dropdown de redes
+        const customSelect = document.querySelector('.morpho-custom-select');
+        const customSelectOptions = document.querySelector('.morpho-custom-select-options');
+        const customSelectTrigger = document.querySelector('.morpho-custom-select-trigger');
+        
+        if (customSelect && customSelectOptions && customSelectTrigger) {
+            if (!customSelect.contains(e.target)) {
+                customSelectOptions.classList.remove('show');
+                customSelectTrigger.classList.remove('active');
+            }
+        }
     });
+
+    // Cerrar dropdown de wallet cuando se desconecta
+    const originalDisconnectWallet = window.disconnectWallet || disconnectWallet;
+    window.disconnectWallet = function() {
+        const dropdown = document.getElementById('walletDropdown');
+        if (dropdown) {
+            dropdown.classList.add('hidden');
+        }
+        if (typeof originalDisconnectWallet === 'function') {
+            originalDisconnectWallet();
+        }
+    };
 
     // Navegación de secciones con animaciones suaves
     function showSection(key) {
@@ -1077,11 +1137,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const customOptions = document.querySelectorAll('.morpho-custom-option');
     const selectValue = document.querySelector('.morpho-select-value');
     
-    if (networkSelector && customSelect) {
+    if (networkSelector && customSelect && customSelectTrigger && customSelectOptions) {
+        // Asegurar que el dropdown esté cerrado inicialmente
+        customSelectOptions.classList.remove('show');
+        customSelectTrigger.classList.remove('active');
+        
         // Función para actualizar el valor mostrado
         function updateSelectValue(value) {
-            const selectedOption = customOptions[Array.from(customOptions).findIndex(opt => opt.dataset.value === value)];
-            if (selectedOption) {
+            const selectedOption = Array.from(customOptions).find(opt => opt.dataset.value === value);
+            if (selectedOption && selectValue) {
                 selectValue.textContent = selectedOption.querySelector('.option-text').textContent;
                 // Actualizar estado selected
                 customOptions.forEach(opt => opt.classList.remove('selected'));
@@ -1095,25 +1159,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Abrir/cerrar dropdown
-        if (customSelectTrigger) {
-            customSelectTrigger.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = customSelectOptions.classList.contains('show');
-                
-                if (isOpen) {
-                    customSelectOptions.classList.remove('show');
-                    customSelectTrigger.classList.remove('active');
-                } else {
-                    customSelectOptions.classList.add('show');
-                    customSelectTrigger.classList.add('active');
-                }
-            });
-        }
+        customSelectTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const isOpen = customSelectOptions.classList.contains('show');
+            
+            // Cerrar todos los demás dropdowns primero
+            const walletDropdown = document.getElementById('walletDropdown');
+            if (walletDropdown && !walletDropdown.classList.contains('hidden')) {
+                walletDropdown.classList.add('hidden');
+            }
+            
+            if (isOpen) {
+                customSelectOptions.classList.remove('show');
+                customSelectTrigger.classList.remove('active');
+            } else {
+                customSelectOptions.classList.add('show');
+                customSelectTrigger.classList.add('active');
+            }
+        });
+        
         
         // Seleccionar opción
         customOptions.forEach(option => {
             option.addEventListener('click', async (e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 const value = option.dataset.value;
                 
                 // Actualizar select nativo
@@ -1131,22 +1202,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     await checkAndSwitchNetwork(currentNetworkKey);
                     await updateBalance();
+                    // Actualizar red en dropdown de wallet
+                    await updateWalletDropdown();
                     // Actualizar balance Stylus
                     if (typeof refreshStylusBalance === 'function') {
                         await refreshStylusBalance();
                     }
-                } catch (e) {
-                    console.error(e);
+                } catch (err) {
+                    console.error('Error al cambiar red:', err);
                 }
             });
-        });
-        
-        // Cerrar al hacer clic fuera
-        document.addEventListener('click', (e) => {
-            if (!customSelect.contains(e.target)) {
-                customSelectOptions.classList.remove('show');
-                customSelectTrigger.classList.remove('active');
-            }
         });
         
         // También mantener el listener del select nativo por si acaso
@@ -1156,6 +1221,8 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 await checkAndSwitchNetwork(currentNetworkKey);
                 await updateBalance();
+                // Actualizar red en dropdown de wallet
+                await updateWalletDropdown();
                 if (typeof refreshStylusBalance === 'function') {
                     await refreshStylusBalance();
                 }
@@ -1438,7 +1505,14 @@ async function confirmQrPayment() {
 function toggleWalletDropdown() {
     const dropdown = document.getElementById('walletDropdown');
     if (dropdown) {
-        dropdown.classList.toggle('hidden');
+        const isHidden = dropdown.classList.contains('hidden');
+        if (isHidden) {
+            dropdown.classList.remove('hidden');
+            // Actualizar información antes de mostrar
+            updateWalletDropdown();
+        } else {
+            dropdown.classList.add('hidden');
+        }
     }
 }
 
@@ -1446,6 +1520,7 @@ function toggleWalletDropdown() {
 function updateWalletDropdown() {
     const dropdown = document.getElementById('walletDropdown');
     const walletAddress = document.getElementById('walletAddress');
+    const walletNetwork = document.getElementById('walletNetwork');
     const dropdownSubscriptionStatus = document.getElementById('dropdownSubscriptionStatus');
     const dropdownBalance = document.getElementById('dropdownBalance');
     const dropdownSubscribeButton = document.getElementById('dropdownSubscribeButton');
@@ -1453,20 +1528,82 @@ function updateWalletDropdown() {
 
     if (userAddress && dropdown && walletAddress && dropdownSubscriptionStatus && dropdownBalance && dropdownSubscribeButton && dropdownUnsubscribeButton) {
         walletAddress.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
-        dropdownBalance.textContent = document.getElementById('balance').textContent;
+        dropdownBalance.textContent = document.getElementById('balance') ? document.getElementById('balance').textContent : '0 ETH';
+        
+        // Actualizar red actual
+        if (walletNetwork) {
+            const networkKey = getSelectedNetworkKey();
+            const network = NETWORKS[networkKey];
+            walletNetwork.textContent = network ? network.chainName : 'Desconocida';
+        }
         
         if (isSubscribed) {
-            dropdownSubscriptionStatus.textContent = 'Activa';
-            dropdownSubscriptionStatus.classList.add('text-green-500');
-            dropdownSubscriptionStatus.classList.remove('text-red-500');
+            dropdownSubscriptionStatus.textContent = 'Miembro';
+            dropdownSubscriptionStatus.classList.add('text-green-400');
+            dropdownSubscriptionStatus.classList.remove('text-red-400');
             dropdownSubscribeButton.classList.add('hidden');
             dropdownUnsubscribeButton.classList.remove('hidden');
         } else {
-            dropdownSubscriptionStatus.textContent = 'Inactiva';
-            dropdownSubscriptionStatus.classList.add('text-red-500');
-            dropdownSubscriptionStatus.classList.remove('text-green-500');
+            dropdownSubscriptionStatus.textContent = 'No miembro';
+            dropdownSubscriptionStatus.classList.add('text-red-400');
+            dropdownSubscriptionStatus.classList.remove('text-green-400');
             dropdownSubscribeButton.classList.remove('hidden');
             dropdownUnsubscribeButton.classList.add('hidden');
+        }
+    }
+}
+
+// Función para cambiar de cuenta
+async function changeAccount() {
+    if (!window.ethereum) {
+        alert('MetaMask no está instalado');
+        return;
+    }
+
+    try {
+        // Solicitar cambiar de cuenta en MetaMask
+        await window.ethereum.request({
+            method: 'wallet_requestPermissions',
+            params: [{ eth_accounts: {} }]
+        });
+
+        // Obtener las cuentas actuales
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        
+        if (accounts.length > 0) {
+            userAddress = accounts[0];
+            
+            // Actualizar la interfaz
+            const walletText = document.getElementById('walletText');
+            if (walletText) {
+                walletText.textContent = `${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`;
+            }
+            
+            // Actualizar saldo y datos
+            await updateBalance();
+            await updateWalletDropdown();
+            
+            // Actualizar balance Stylus
+            if (typeof refreshStylusBalance === 'function') {
+                await refreshStylusBalance();
+            }
+            
+            // Actualizar estadísticas de comunidad si está disponible
+            if (typeof checkMembershipStatus === 'function') {
+                await checkMembershipStatus();
+            }
+            if (typeof checkCreditStats === 'function') {
+                await checkCreditStats();
+            }
+            
+            alert('Cuenta cambiada exitosamente');
+        }
+    } catch (error) {
+        if (error.code === 4001) {
+            console.log('Usuario canceló el cambio de cuenta');
+        } else {
+            console.error('Error al cambiar cuenta:', error);
+            alert('Error al cambiar cuenta: ' + error.message);
         }
     }
 }

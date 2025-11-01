@@ -73,32 +73,58 @@
                     <button id="connectWallet" class="morpho-rounded-button morpho-button-grey morpho-primary morpho-button-parent">
                         <span id="walletText">Conectar Wallet</span>
                     </button>
-                    <div id="walletDropdown" class="morpho-dropdown hidden absolute right-0 mt-2 w-64 rounded-lg shadow-xl z-50">
+                    <div id="walletDropdown" class="morpho-dropdown hidden absolute right-0 mt-2 w-72 rounded-lg shadow-xl z-50">
                         <div class="p-4">
-                            <div class="flex items-center space-x-2 mb-4">
-                                <i class="fas fa-wallet"></i>
-                                <span id="walletAddress" class="text-sm font-mono morpho-dropdown-item"></span>
+                            <!-- Información de la Wallet -->
+                            <div class="flex items-center space-x-3 mb-4 pb-4 border-b border-gray-700">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                                    <i class="fas fa-wallet text-white text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-semibold text-white truncate" id="walletAddress">0x0000...0000</div>
+                                    <div class="text-xs text-gray-400 truncate" id="walletNetwork">Arbitrum Sepolia</div>
+                                </div>
                             </div>
-                            <div class="border-t border-gray-700 pt-4">
-                                <div class="flex items-center justify-between mb-2 morpho-dropdown-item">
-                                    <span class="text-sm">Estado de Membresía:</span>
-                                    <span id="dropdownSubscriptionStatus" class="text-sm font-bold"></span>
+
+                            <!-- Estadísticas -->
+                            <div class="mb-4 space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-400">Saldo:</span>
+                                    <span id="dropdownBalance" class="text-white font-semibold">0 ETH</span>
                                 </div>
-                                <div class="flex items-center justify-between mb-2 morpho-dropdown-item">
-                                    <span class="text-sm">Saldo:</span>
-                                    <span id="dropdownBalance" class="text-sm font-bold"></span>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-400">Estado:</span>
+                                    <span id="dropdownSubscriptionStatus" class="text-sm font-semibold text-red-400">No miembro</span>
                                 </div>
-                                <div class="mt-4 space-y-2">
-                                    <button id="dropdownSubscribeButton" onclick="subscribe()" class="w-full morpho-rounded-button morpho-button-grey text-sm">
-                                        <i class="fas fa-crown mr-2"></i>Suscribirse
-                                    </button>
-                                    <button id="dropdownUnsubscribeButton" onclick="unsubscribe()" class="hidden w-full morpho-rounded-button morpho-button-grey text-sm">
-                                        <i class="fas fa-times-circle mr-2"></i>Cancelar Suscripción
-                                    </button>
-                                    <button id="disconnectWallet" class="w-full morpho-rounded-button morpho-button-grey text-sm">
-                                        <i class="fas fa-sign-out-alt mr-2"></i>Desconectar
-                                    </button>
-                                </div>
+                            </div>
+
+                            <!-- Acciones de Wallet -->
+                            <div class="border-t border-gray-700 pt-3 space-y-2">
+                                <button id="changeAccountBtn" class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-white">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span>Cambiar Cuenta</span>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-xs"></i>
+                                </button>
+                                
+                                <button id="dropdownSubscribeButton" onclick="subscribe()" class="w-full flex items-center justify-center px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors text-white">
+                                    <i class="fas fa-crown mr-2"></i>
+                                    <span>Suscribirse</span>
+                                </button>
+                                
+                                <button id="dropdownUnsubscribeButton" onclick="unsubscribe()" class="hidden w-full flex items-center justify-center px-3 py-2 text-sm rounded-lg bg-yellow-600 hover:bg-yellow-700 transition-colors text-white">
+                                    <i class="fas fa-times-circle mr-2"></i>
+                                    <span>Cancelar Suscripción</span>
+                                </button>
+                            </div>
+
+                            <!-- Desconectar -->
+                            <div class="border-t border-gray-700 pt-3 mt-3">
+                                <button id="disconnectWallet" class="w-full flex items-center justify-center px-3 py-2 text-sm rounded-lg bg-red-600/20 hover:bg-red-600/30 border border-red-600/30 transition-colors text-red-400">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>
+                                    <span>Desconectar Wallet</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -317,17 +343,156 @@
         </section>
 
         <section id="section-creadores" class="section-morpho hidden">
-            <h2 class="section-morpho-title text-gradient-morpho">Creatividad y Economía de Creadores</h2>
-            <p class="section-morpho-subtitle">Herramientas que devuelven el control e ingresos a creadores.</p>
-            <ul class="list-morpho mb-8">
-                <li>Distribución justa de regalías</li>
-                <li>Boletaje/experiencias transparentes</li>
-                <li>Suscripciones y membresías directas</li>
-            </ul>
-            <div class="grid-morpho grid-morpho-3">
-                <button class="btn-morpho btn-morpho-accent" id="cta-suscripciones">Crear suscripción</button>
-                <button class="btn-morpho btn-morpho-accent" id="cta-regalias">Dividir regalías</button>
-                <button class="btn-morpho btn-morpho-accent" id="cta-experiencias">Configurar experiencia</button>
+            <div class="flex items-center gap-4 mb-6 flex-wrap">
+                <h2 class="section-morpho-title text-gradient-morpho">Creatividad y Economía de Creadores</h2>
+                <span class="badge-morpho">
+                    <i class="fas fa-code"></i> Powered by Stylus (Rust)
+                </span>
+            </div>
+            <p class="section-morpho-subtitle">Comunidad de apoyo mutuo para creativos. Únete con 1 token y accede a préstamos, publicaciones y finanzas inclusivas.</p>
+            
+            <!-- Sistema de Comunidad -->
+            <div class="morpho-card mt-8">
+                <h3 class="text-xl font-light mb-6 flex items-center gap-2">
+                    <i class="fas fa-users"></i>
+                    Comunidad de Creativos
+                </h3>
+                <p class="text-gray-400 mb-6 text-sm">Suscríbete con solo 0.00001 ETH (Arbitrum, Scroll, Base o ENS) para unirte a la comunidad y acceder a todas las funcionalidades.</p>
+                <div class="grid-morpho grid-morpho-3 mb-6">
+                    <div class="stats-card-morpho">
+                        <div class="text-sm text-gray-400 mb-2">Estado de Membresía</div>
+                        <div id="membershipStatus" class="text-lg font-light text-red-400">No miembro</div>
+                    </div>
+                    <div class="stats-card-morpho">
+                        <div class="text-sm text-gray-400 mb-2">Total de Miembros</div>
+                        <div id="memberCount" class="text-lg font-light">0</div>
+                    </div>
+                    <div class="stats-card-morpho">
+                        <div class="text-sm text-gray-400 mb-2">Precio de Suscripción</div>
+                        <div id="subscriptionPrice" class="text-lg font-light">0.00001 ETH</div>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <button id="subscribeCommunityBtn" class="btn-morpho btn-morpho-accent">
+                        <i class="fas fa-crown mr-2"></i>Unirse a la Comunidad
+                    </button>
+                    <button id="checkMembershipBtn" class="btn-morpho btn-morpho-ghost">
+                        <i class="fas fa-check mr-2"></i>Verificar Membresía
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sistema de Préstamos -->
+            <div class="morpho-card mt-6">
+                <h3 class="text-xl font-light mb-6 flex items-center gap-2">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    Préstamos para Creativos
+                </h3>
+                <p class="text-gray-400 mb-6 text-sm">Solicita préstamos de la comunidad o apoya a otros creativos prestando fondos.</p>
+                
+                <!-- Solicitar Préstamo -->
+                <div class="mb-6 p-4 bg-gray-800/50 rounded-lg">
+                    <h4 class="text-lg font-light mb-4">Solicitar Préstamo</h4>
+                    <div class="grid-morpho grid-morpho-2 gap-4 mb-4">
+                        <input id="loanAmount" type="number" step="0.001" min="0.001" class="input-morpho" placeholder="Monto (ETH)">
+                        <input id="loanInterest" type="number" step="1" min="0" max="100" class="input-morpho" placeholder="Tasa de interés (%)">
+                        <input id="loanDays" type="number" step="1" min="1" class="input-morpho" placeholder="Duración (días)">
+                        <input id="loanDescription" type="text" class="input-morpho" placeholder="Descripción del proyecto">
+                    </div>
+                    <button id="requestLoanBtn" class="btn-morpho btn-morpho-accent">
+                        <i class="fas fa-plus mr-2"></i>Solicitar Préstamo
+                    </button>
+                </div>
+
+                <!-- Aprobar y Financiar Préstamos -->
+                <div class="mb-6 p-4 bg-gray-800/50 rounded-lg">
+                    <h4 class="text-lg font-light mb-4">Préstamos Pendientes</h4>
+                    <div id="pendingLoansList" class="space-y-3">
+                        <p class="text-gray-400 text-sm">No hay préstamos pendientes</p>
+                    </div>
+                </div>
+
+                <!-- Mis Préstamos -->
+                <div class="p-4 bg-gray-800/50 rounded-lg">
+                    <h4 class="text-lg font-light mb-4">Mis Préstamos</h4>
+                    <div id="myLoansList" class="space-y-3">
+                        <p class="text-gray-400 text-sm">No tienes préstamos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buró de Crédito y Finanzas Inclusivas -->
+            <div class="morpho-card mt-6">
+                <h3 class="text-xl font-light mb-6 flex items-center gap-2">
+                    <i class="fas fa-chart-line"></i>
+                    Finanzas Inclusivas - Buró de Crédito
+                </h3>
+                <p class="text-gray-400 mb-6 text-sm">Muestra tu historial de pagos, score de crédito y obtén cashback por cumplir con tus pagos.</p>
+                
+                <div class="grid-morpho grid-morpho-3 mb-6">
+                    <div class="stats-card-morpho">
+                        <div class="text-sm text-gray-400 mb-2">Score de Crédito</div>
+                        <div id="creditScore" class="text-2xl font-light text-purple-400">-</div>
+                        <div class="text-xs text-gray-500 mt-1">0-1000</div>
+                    </div>
+                    <div class="stats-card-morpho">
+                        <div class="text-sm text-gray-400 mb-2">Total Pagado</div>
+                        <div id="totalPaid" class="text-lg font-light">0 ETH</div>
+                    </div>
+                    <div class="stats-card-morpho">
+                        <div class="text-sm text-gray-400 mb-2">Cashback Disponible</div>
+                        <div id="cashbackBalance" class="text-lg font-light text-green-400">0 ETH</div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mb-6">
+                    <button id="checkCreditBtn" class="btn-morpho btn-morpho-primary">
+                        <i class="fas fa-sync-alt mr-2"></i>Actualizar Estadísticas
+                    </button>
+                    <button id="withdrawCashbackBtn" class="btn-morpho btn-morpho-accent">
+                        <i class="fas fa-money-bill-wave mr-2"></i>Retirar Cashback
+                    </button>
+                </div>
+
+                <!-- Historial de Pagos -->
+                <div class="p-4 bg-gray-800/50 rounded-lg">
+                    <h4 class="text-lg font-light mb-4">Historial de Pagos</h4>
+                    <div id="paymentHistoryList" class="space-y-2">
+                        <p class="text-gray-400 text-sm">No hay historial de pagos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sistema de Publicaciones -->
+            <div class="morpho-card mt-6">
+                <h3 class="text-xl font-light mb-6 flex items-center gap-2">
+                    <i class="fas fa-edit"></i>
+                    Publicaciones de Creativos
+                </h3>
+                <p class="text-gray-400 mb-6 text-sm">Comparte tus proyectos, ideas y trabajos con la comunidad.</p>
+                
+                <!-- Formulario de Publicación -->
+                <div class="mb-6 p-4 bg-gray-800/50 rounded-lg">
+                    <h4 class="text-lg font-light mb-4">Crear Nueva Publicación</h4>
+                    <div class="space-y-4">
+                        <input id="postTitle" type="text" class="input-morpho w-full" placeholder="Título de la publicación">
+                        <textarea id="postContent" class="input-morpho w-full" rows="5" placeholder="Contenido de la publicación"></textarea>
+                        <input id="postImageUrl" type="text" class="input-morpho w-full" placeholder="URL de imagen (opcional)">
+                        <button id="createPostBtn" class="btn-morpho btn-morpho-accent">
+                            <i class="fas fa-paper-plane mr-2"></i>Publicar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Publicaciones -->
+                <div class="p-4 bg-gray-800/50 rounded-lg">
+                    <h4 class="text-lg font-light mb-4">Publicaciones Recientes</h4>
+                    <div id="postsList" class="space-y-4">
+                        <div class="post-item p-4 bg-gray-900/50 rounded-lg">
+                            <p class="text-gray-400 text-sm">No hay publicaciones aún. ¡Sé el primero en compartir!</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -832,6 +997,7 @@
     <script src="contracts-arbitrum.js"></script>
     <script src="stylus-contracts.js"></script>
     <script src="app.js"></script>
+    <script src="creators-community.js"></script>
     <script>
         // Función para mostrar el modal de membresía
         function showMembershipModal() {
